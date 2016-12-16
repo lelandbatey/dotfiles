@@ -35,7 +35,7 @@ Xcursor.theme_core:	1
 
 !urxvt*font:xft:Inconsolata:size=10,xft:Inconsolata\ for\ Powerline:size=10
 !urxvt*font:xft:Inconsolata:size=11,xft:Inconsolata\ for\ Powerline:size=11
-urxvt*font:xft:Inconsolata:size=11,xft:Inconsolata\ for\ Powerline:size=11,xft:Symbola:size=7
+urxvt*font:xft:Inconsolata:size=10,xft:Inconsolata\ for\ Powerline:size=10,xft:Symbola:size=6
 !urxvt*font:xft:Inconsolata:size=11, xft:Inconsolata\ for\ Powerline:pixelsize=13 ,xft:Terminus
 !URxvt.font: xft:Consolas:size=13, xft:Inconsolata\ for\ Powerline
 URxvt*letterSpace: -1
