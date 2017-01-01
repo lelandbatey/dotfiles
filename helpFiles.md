@@ -1,9 +1,9 @@
-        __  __     __         _______ __         
+        __  __     __         _______ __
        / / / /__  / /___     / ____(_) /__  _____
       / /_/ / _ \/ / __ \   / /_  / / / _ \/ ___/
-     / __  /  __/ / /_/ /  / __/ / / /  __(__  ) 
-    /_/ /_/\___/_/ .___/  /_/   /_/_/\___/____/  
-                /_/                              
+     / __  /  __/ / /_/ /  / __/ / / /  __(__  )
+    /_/ /_/\___/_/ .___/  /_/   /_/_/\___/____/
+                /_/
 
 Author: Leland Batey
 
@@ -99,7 +99,7 @@ Mod_rewrite works by comparing the incoming referer against the specified (regul
 	RewriteCond %{HTTP_REFERER} !^http://(.+\.)?allowedSite\.com/ [NC]
 
 >> Returns TRUE if the referer does not come from "allowedSite.com"
-	
+
 	RewriteCond %{HTTP_REFERER} !^$
 
 >> Returns TRUE if the referer is not blank (null).
@@ -123,7 +123,7 @@ I had gone into this trying to set up a simple dropdown for the frontpage of adr
     1. Placement of javascript "&lt;script&gt;" notifications matters. These
     will not work if called in the "head", they must be called in the "body"
     of the page.
-   
+
     2. The *order* of the javascript files matters. In my case, bootstrap
     requires jquery to already be loaded, so jquery must come BEFORE
     bootstrap.
@@ -134,7 +134,7 @@ Once I'd done both of those, everything worked great!
 So, converting a video to an animated gif is semi-easy, but mostly not. Here's how it goes:
 
 Make sure you have the following tools install:
-    
+
     ffmpeg
     gifsicle
 
@@ -144,12 +144,12 @@ Now for the fun part! For whatever reason, the built in video -> .gif convertion
 
     First, we split apart every single frame of the video into it's own gif
     frame, with an appropriate file name to put it in the correct order.
-    
+
     Second, we use gifsicle to combine all these .gif frames into a single
     animated gif.
 
 Here's the command to split up the video into the gif frames:
-    
+
     ffmpeg -i file_to_be_input.mp4 out%04d.gif
 
 Note the weird name specified for the output gif. For whatever reason, this seems to be important. It apparently makes sure each frame has the correct/appropriate number.
@@ -198,17 +198,17 @@ Now FFMPEG will output high quality .png's as the individual frames. Then, you'l
 In the end, this is what the whole script looks like:
 
     #!/bin/bash
-    
+
     # NOTE: the "$1" in the line below this means "command line argument #1 is
     # inserted here". If you're running these manually, replace the $1 with
     # the name of your video file.
 
     ffmpeg -i $1 out%04d.png # Extracts each frame of the video as a single
     gif
-    
+
     convert -delay 4 out*.png anim.gif # Combines all the frames into one very
     nicely animated gif.
-    
+
     convert -layers Optimize anim.gif optimized_output.gif # Optimizes the gif
     using imagemagick
 
@@ -310,11 +310,11 @@ That seems to make plenty of sense; it requires the URL to get the JSON from, an
 
     $.getJSON('ajax/test.json', function(data) {
         var items = [];
-             
+
         $.each(data, function(key, val) {
             items.push('<li id="' + key + '">' + val + '</li>');
         });
-                      
+
         $('<ul/>', {
             'class': 'my-new-list',
             html: items.join('')
@@ -330,12 +330,12 @@ The answer is: no, that's valid in Jquery. I searched for quite a while, and [I 
 # Gemfiles, RVM, and Ruby
 
 Alright, the following is a rant that I wrote in my .bash_profile, after just trying to **install** RVM:
-    
+
     ### RVM Startup! ###
-    # By default RVM puts this next line into the .bash_profile line. However, 
+    # By default RVM puts this next line into the .bash_profile line. However,
     # this is a STUPID IDEA because .bash_profile is only exectuted for "login"
     # shells. By default, most shells opened once you've actually logged in are
-    # NOT login shells. So URXVT, Gnome Terminal, etc are all non-login shells 
+    # NOT login shells. So URXVT, Gnome Terminal, etc are all non-login shells
     # by default. However, they are interactive shells, which should be the
     # distinction. But, because the Ruby community seems to only ever do
     # anything on OS X and they don't care at all about how stuff works, they
@@ -989,4 +989,59 @@ Though I use i3, I still use lots of graphical programs, and I want those progra
     gtk-xft-hintstyle=hintslight
     gtk-xft-rgba=rgb
 
+# Launching things on startup
 
+Sysvinit
+
+systemd init
+
+cron @reboot
+
+supervisord
+
+# Updating a package on PyPi
+
+To re-upload a package to PyPi, go to the source of that package and run:
+
+    python setup.py sdist bdist_wheel
+    twine upload dist/*
+
+# Keeping two folders in sync
+
+I frequently have a workflow where I want to keep two directories with the same
+name on different hosts in sync. I want to be able to keep a script running and
+then any changes made in one will sync dropbox style to the folder on the
+remote host.
+
+So let's say there's a folder `/home/leland/foo` on my local computer. I'm
+going to edit some files in that local folder, and I want those changes to show
+up in the folder `/var/bar` on a **remote** computer. And not just in that
+directory alone, I want proper sub-directory handling as well. Like this:
+
+    # Sync a local directory and a remote directory. Let's suppose they're both
+    # empty for starters.
+    sync_files remotehost:/var/bar /home/leland/foo
+
+    # Locally change a file
+    touch /home/leland/foo/wow.txt
+
+    # How the directories now look on both machines
+    localhost:/home/leland/foo/      remotehost:/var/bar/
+    └── wow.txt                      └── wow.txt
+
+    # Make another change, this time a nested local change
+    mkdir /home/leland/foo/dang
+    touch /home/leland/foo/dang/beta.txt
+
+    # How the directories now look on both machines
+    localhost:/home/leland/foo/      remotehost:/var/bar/
+    ├── dang                         ├── dang
+    │   └── beta.txt                 │   └── beta.txt
+    └── wow.txt                      └── wow.txt
+
+So you see, I want these directories to be kept in sync.
+
+The way I can make this happen is with a little python project I wrote, called
+`auto_sync.py`.
+
+Find it here: https://github.com/lelandbatey/auto_sync/
