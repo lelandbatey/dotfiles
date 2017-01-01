@@ -52,6 +52,9 @@ Plugin 'justinmk/vim-syntax-extra'
 " Nice Go integrations and autocompletions
 Plugin 'fatih/vim-go'
 
+" An inter-vim wiki for my own use
+Plugin 'vimwiki/vimwiki'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -84,6 +87,8 @@ let NERDTreeWinSize=20
 
 " Make YouCompleteMe close it's preview window once you leave insert mode
 let g:ycm_autoclose_preview_window_after_insertion = 1
+" Ensure YouCompleteMe uses whichever version of python I'm using
+let g:ycm_python_binary_path = 'python'
 
 " Add powerline font support
 let g:airline_powerline_fonts = 1
@@ -191,7 +196,11 @@ map <leader>f <plug>NERDTreeTabsToggle<CR>
 map <leader>t :tabe<space>
 
 " Toggleing viewing whitespace
-nmap <leader>w :set list!<enter>
+nmap <leader>W :set list!<enter>
+
+
+" Toggle spellchecking
+nmap <leader>l :set spell! spelllang=en_us<CR>
 
 " Moving between buffers in normal mode
 nmap <leader>m :tabnext<enter>
@@ -257,3 +266,20 @@ function! RemoveHighlight()
 endfunction
 endif
 map <leader>r :call RemoveHighlight()<enter>
+
+" Set the auto-export variable of vimwiki, so all wiki entries are rendered to
+" html on write. This big bunch of configuration is derived from
+" 'echo g:vimwiki_list' on a brand new install. It includes pretty much
+" everything.
+" let g:vimwiki_list = [{'maxhi': 0, 'css_name': 'style.css', 'auto_export': 1,\
+" 	'diary_index': 'diary', 'template_default': 'default',\
+" 	'nested_syntaxes': {}, 'auto_toc': 0, 'auto_tags': 0,\
+" 	'diary_sort': 'desc', 'path': '/home/leland/vimwiki/',\
+" 	'diary_link_fmt': '%Y-%m-%d', 'template_ext': '.tpl',\
+" 	'syntax': 'default', 'custom_wiki2html': '',\
+" 	'automatic_nested_syntaxes': 1, 'index': 'index',\
+" 	'diary_header': 'Diary', 'ext': '.wiki',\
+" 	'path_html': '/home/leland/vimwiki_html/', 'temp': 0,\
+" 	'template_path': '/home/leland/vimwiki/templates/',\
+" 	'list_margin': -1, 'diary_rel_path': 'diary/'}]
+let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]

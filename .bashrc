@@ -157,6 +157,18 @@ function mp(){
     pandoc -s -o "$outfile" "$1"
 }
 
+# A nice way to list all the possible executable packages within the current
+# directory structure. Useful for listing go executables in a project.
+function list-gomains(){
+    mainfiles=$(ag --files-with-matches --go "package main")
+
+    for fn in $mainfiles; do
+        mainpkg=${fn%/*.go}
+        name=${mainpkg##*/}
+        echo "$name"
+    done
+}
+
 
 # Unlimited bash history size
 #unset HISTSIZE
