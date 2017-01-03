@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install with 
 #
-# curl https://raw.githubusercontent.com/lelandbatey/configDebDev/master/autoinstall.sh | sh
+# curl https://raw.githubusercontent.com/lelandbatey/dotfiles/master/autoinstall.sh | sh
 
 sudo apt-get update
 sudo apt-get -y install git make htop python-pip
