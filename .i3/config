@@ -31,6 +31,7 @@ set $right l
 
 # Start a web browser
 bindsym $mod+backslash exec qutebrowser
+bindsym $mod+Shift+backslash exec firefox
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -123,6 +124,10 @@ bindsym $mod+Shift+7 move container to workspace 7
 bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
+
+# move a workspace to another monitor
+bindsym $mod+z move workspace to output left
+bindsym $mod+x move workspace to output right
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
