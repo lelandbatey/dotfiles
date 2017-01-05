@@ -1045,3 +1045,22 @@ The way I can make this happen is with a little python project I wrote, called
 `auto_sync.py`.
 
 Find it here: https://github.com/lelandbatey/auto_sync/
+
+# Using `gnome-software` with `i3`
+
+I had trouble using `gnome-software` to install various `.deb` packages, where
+I used to have no trouble installing `.deb` packages using `softwarecenter`. My
+workflow used to be `software-center blah.deb` and when I clicked "Install" in
+the following dialog, I'd be asked for my password and things would behave
+correctly.
+
+However, under `i3` I couldn't do the same things. I'd click `Install` and it
+would show the animation like it was trying to install, but then it'd revert to
+the usual install button.
+
+I found a fix for this
+[here.](http://askubuntu.com/questions/799125/authentication-agent-and-i3wm)
+Apparently, I need to have the
+`/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1` program
+running. At some point I'll add this to my i3 startup, but for now I can just
+run this in a seperate terminal when I need it.
