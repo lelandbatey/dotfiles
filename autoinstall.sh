@@ -22,8 +22,8 @@ fi
 
 # Installs all parts of my dotfiles repository
 cd ~
-git clone "https://github.com/lelandbatey/configDebDev.git"
-cd configDebDev
+git clone "https://github.com/lelandbatey/dotfiles.git"
+cd dotfiles
 
 python install.py --act safe
 #python install.py --act prepvim
