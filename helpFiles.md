@@ -1064,3 +1064,11 @@ Apparently, I need to have the
 `/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1` program
 running. At some point I'll add this to my i3 startup, but for now I can just
 run this in a seperate terminal when I need it.
+
+# Finding number of lines changes between commits using `git`
+
+I wanted to know a rough figure for the number of lines changed between two
+commits in a `git` repository. I wrote the following shell oneliner to get this
+information:
+
+    git diff --stat b47d80f..origin/master | awk '/\|/{s+=((substr ($4, 0, 1)) $3)}END{print s}'
