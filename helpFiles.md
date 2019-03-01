@@ -962,11 +962,9 @@ Additionally, it is possible to create python3 virtualenvironments with the `pyv
 
 # Swapping Escape and Capslock
 
-Place the following in `~/.xprofile`:
+Modify the `/etc/default/keyboard` file so that the `XKBOPTIONS` contains the following value:
 
-    # to find out more check man pages and 'man xkeyboard-config'
-    # changes caps to be escape
-    setxkbmap -option caps:escape
+    caps:swapescape
 
 # Changing Desktop Themes
 
@@ -1072,3 +1070,32 @@ commits in a `git` repository. I wrote the following shell oneliner to get this
 information:
 
     git diff --stat b47d80f..origin/master | awk '/\|/{s+=((substr ($4, 0, 1)) $3)}END{print s}'
+
+# Ensuring `urxvt` is used as terminal emulator with i3 on Debian
+
+When I installed i3 on Debian (through `apt install i3`) I found that when I
+launched a termina (mod-enter), the terminal emulator that launched was not
+`urxvt` but instead `xfce4-terminal` (which was installed because I installed
+XFCE4 when installing Debian).
+
+The reason this was happening was because I have set up i3 to launch a terminal
+by actually launching a script called `i3-sensible-terminal`. By looking at the
+brief source of that file, I found that the the reason for this was that it
+checks first for a terminal by the name of `x-terminal-emulator` and runs that
+if it exists, and it turns out that `x-terminal-emulator` on my system was a
+script that would ultimately just run `xfce4-terminal`. To fix all this, I
+removed `x-terminal-emulator` from `i3-sensible-terminal` in `/usr/bin` and now
+when I hit mod-enter `urxvt` is correctly launched.
+
+# Modifying the `$PATH` variable of `i3` launched through `LightDM`
+
+I found that I wanted to modify the `$PATH` environment variable provided to
+`i3` upon logging in using `LightDM`. I wanted to do this so that I could run a
+local installation of `firefox`, specifically `firefox-nightly`. I chose to go
+witha local installation of Nightly because it turns out I can download a
+relatively self contained version of Nightly to use without having to replace
+the system version of Firefox.
+
+To change the `$PATH`, I had to modify the `.xsessionrc` file to set the
+exported `$PATH`.
+
