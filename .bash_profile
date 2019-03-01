@@ -21,7 +21,7 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 if [ -d "$HOME/bin" ]; then 
-    PATH=$HOME/bin:$PATH
+    export PATH=$HOME/bin:$HOME/bin/firefox:$PATH
 fi
 
 if [ -d "$HOME/.cabal/bin" ]; then
@@ -29,3 +29,5 @@ if [ -d "$HOME/.cabal/bin" ]; then
 fi
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+export PATH="$HOME/.cargo/bin:$PATH"

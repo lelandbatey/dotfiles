@@ -68,6 +68,8 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
+
+
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
     . "$HOME/.local/bin/bashmarks.sh"
@@ -119,7 +121,7 @@ alias lesn="less -N" # Less now shows line numbers on the left hand side.
 alias gca="git commit -am" # Makes commits faster!
 
 # Automatically "pull" all github repos in the current users home directory
-alias gpa="find ~/ -name .git -type d | sed 's,/*[^/]\+/*$,,' | xargs -L1 bash -c 'cd \$1 && git pull; echo -ne \ : \$1 \\\n' _"
+alias gpa="find . -name .git -type d | sed 's,/*[^/]\+/*$,,' | xargs -L1 bash -c 'cd \$1 && git pull; echo -ne \ : \$1 \\\n' _"
 
 alias gshow="git show --color --pretty=format:%b" # Pretty-printing of a commit in git
 
@@ -141,6 +143,13 @@ function pSplit(){
     #echo -e "1: $1\n2: $2"
     python -c "from __future__ import print_function
 for x in \"\"\"$1\"\"\".split(\"$2\"): print(x);"
+}
+function pymodules(){
+	python -c "import pkgutil
+import sys, importlib
+package = importlib.import_module(sys.argv[1])
+for importer, modname, ispkg in pkgutil.walk_packages(path=package.__path__, prefix=package.__name__+'.', onerror=lambda x: None):
+	print(modname)" $@
 }
 
 function mp(){
@@ -245,6 +254,7 @@ fi
 # Sources nvm if it's installed.
 if [ -d "$HOME/.nvm/" ]; then
     source "$HOME/.nvm/nvm.sh"
+    source "$HOME/.nvm/bash_completion"
 fi
 
 # If terminal launched inside X, the DISPLAY variable will already be set.
@@ -254,9 +264,6 @@ if [ -z "$DISPLAY" ]; then
     DISPLAY=":0.0"
 fi
 
-export ANDROID_HOME="$HOME/Android/Sdk/"
-export PATH=$PATH:$ANDROID_HOME/build-tools/23.0.1/
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$ANDROID_HOME/tools
 
-
+# Source all the work-specific stuff
+source "$HOME/.work-conf.sh"
