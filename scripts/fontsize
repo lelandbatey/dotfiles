@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Sends the correct control sequence to the terminal to adjust the terminal
+# font size
+printf '\33]50;%s\007' xft:Inconsolata:size=$1
