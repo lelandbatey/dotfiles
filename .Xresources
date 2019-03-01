@@ -26,8 +26,9 @@ Xft.hinting:	1
 Xft.hintstyle:	hintslight
 Xft.rgba:	rgb
 Xft.lcdfilter:	lcddefault
-Xft.dpi:	135
+!Xft.dpi:	192
 !Xft.dpi:	106
+Xft.dpi:	 96
 Xcursor.theme:	Human
 Xcursor.size:	24
 Xcursor.theme_core:	1
@@ -42,9 +43,12 @@ URxvt*letterSpace: -1
 URxvt.scrollBar:off
 URxvt.foreground:grey80
 URxvt.depth:32
-URxvt.background: rgba:1300/1900/2600/ffff
+!URxvt.background: rgba:1300/1900/2600/ffff
+URxvt.background: rgba:1B00/1B00/1300/ffff
 URxvt.blurRadius: 1x128
+URxvt.color12:           #3838FF
+!URxvt.color12:           #FFFFFF
 
-URxvt.perl-ext-common : default,matcher
-URxvt.urlLauncher     : chromium-browser
+URxvt.perl-ext-common : default
+!URxvt.url-launcher     : firefox
 URxvt.matcher.button  : 1

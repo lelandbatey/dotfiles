@@ -9,6 +9,27 @@
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
+#### COLORS ####
+
+# DEFAULTS:
+## class                 border  backgr. text    indicator child_border
+#client.focused          #4c7899 #285577 #ffffff #2e9ef4   #285577
+#client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
+#client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+#client.urgent           #2f343a #900000 #ffffff #900000   #900000
+#client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+
+#client.background       #ffffff
+
+# class                 border  backgr. text    indicator child_border
+client.focused          #4a7730 #4a7730 #ffffff #78f52f   #4a7730
+client.focused_inactive #6f776b #606b62 #ffffff #484e50   #6f776b
+client.unfocused        #202020 #0c2200 #888888 #292d2e   #0c2200
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+
+client.background       #ffffff
+
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -37,9 +58,11 @@ bindsym $mod+Shift+backslash exec firefox
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec urxvt
 # start a terminal in the same directory
-bindsym $mod+Shift+Return exec i3-sensible-terminal -cd "`xcwd`"
+#bindsym $mod+Shift+Return exec i3-sensible-terminal -cd "`xcwd`"
+bindsym $mod+Shift+Return exec urxvt -cd "`xcwd`"
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -101,6 +124,9 @@ bindsym $mod+a focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
+# Make a window 'sticky', visible across all workspaces
+bindsym $mod+Shift+w sticky toggle
+
 # switch to workspace
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
@@ -135,6 +161,9 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# Lock i3
+#bindsym $mod+Shift+Control+l exec "/home/leland/bin/locker.sh"
+#bindsym $mod+Control+Return exec "/home/leland/bin/swaplayout.sh"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -174,8 +203,12 @@ exec --no-startup-id xfce4-volumed
 # exec --no-startup-id xfce4-panel --disable-wm-check
 # Start the xfce4 panel network applet
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --bg-fill /home/leland/configDebDev/img/there-joehesus.jpg
+exec --no-startup-id feh --bg-center --image-bg black /home/leland/dotfiles/img/3k-mellowish-fractal2017-05-14_14_01_47.png
 #exec --no-startup-id /home/leland/.dropbox-dist/dropbox-lnx.x86_64-3.12.6/dropboxd
 exec --no-startup-id /home/leland/.dropbox-dist/dropboxd
 # Start the xfce4 power manager
 exec --no-startup-id xfce4-power-manager
+exec --no-startup-id parcellite
+
+exec --no-startup-id xautolock -detectsleep \
+  -time 3 -locker "/home/leland/bin/locker.sh" &
