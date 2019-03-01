@@ -1,3 +1,5 @@
+let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 if isdirectory($HOME."/.vim/bundle/Vundle.vim")
@@ -8,7 +10,7 @@ call vundle#begin()
 "call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 
 " User-specified vim plugins
 Plugin 'tpope/vim-fugitive'
@@ -25,14 +27,8 @@ Plugin 'Raimondi/delimitMate'
 " Monokai colorscheme
 Plugin 'sickill/vim-monokai'
 
-" File side view
-Plugin 'scrooloose/nerdtree'
-
 " Convenient commenting
 Plugin 'scrooloose/nerdcommenter'
-
-" Nerdtree plugin for better display
-Bundle 'jistr/vim-nerdtree-tabs'
 
 " Autoindent
 Plugin 'tpope/vim-sleuth'
@@ -80,10 +76,8 @@ let g:airline#extensions#tabline#enabled = 1
 " Set the number next to the filename in the tab to show splits and tab number
 let g:airline#extensions#tabline#tab_nr_type = 2
 
-" Have NERDTree ignore certain files
-let NERDTreeIgnore = ['\.pyc$', '\.sqlite3$', '\.png$', '\.jpg$']
-" Ensure NERDTree window size is sufficiently small
-let NERDTreeWinSize=20
+" Modify file view so it uses a tree structure
+let g:netrw_liststyle = 3
 
 " Make YouCompleteMe close it's preview window once you leave insert mode
 let g:ycm_autoclose_preview_window_after_insertion = 1
@@ -189,8 +183,8 @@ if !exists("*SourceAgain")
 endif
 :map <leader>s :call SourceAgain()<enter>
 
-" Toggle Nerdtree file view on and off
-map <leader>f <plug>NERDTreeTabsToggle<CR>
+" Open the netrw explorer
+map <leader>f :Vexplore<enter>
 
 " Quick opening tabs
 map <leader>t :tabe<space>
@@ -220,6 +214,11 @@ nmap <leader><leader>p :set paste!<enter>
 " type "<leader><shift><quote>y" and that would copy the selection to system
 " keyboard.
 map <leader>" "+
+
+" Ensure YouCompleteMe will jump to definitions in a new tab
+let g:ycm_goto_buffer_command = 'new-tab'
+" Easier binds for the 'GoTo' functionality of YouCompleteMe
+nnoremap <leader>jd :tab YcmCompleter GoTo<CR>
 
 " Fix filetype associations for Markdown.
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
