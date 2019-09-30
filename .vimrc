@@ -1,72 +1,85 @@
+"let g:python_host_prog='/home/leland/bin/venv/bin/python'
 let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
-if isdirectory($HOME."/.vim/bundle/Vundle.vim")
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+" Install the vim-plug command according to the instructions here:
+"     https://github.com/junegunn/vim-plug
+call plug#begin('~/.vim/plugged')
 
-" User-specified vim plugins
-Plugin 'tpope/vim-fugitive'
+" A prerequisite for autocompletion
+Plug 'ncm2/ncm2'
+" Also a prerequisite for autocompletion
+Plug 'roxma/nvim-yarp'
+" Also a prerequisite for autocompletion
+Plug 'roxma/vim-hug-neovim-rpc'
 
-" In-file identifier completion, like Sublime Text
-Plugin 'Valloric/YouCompleteMe'
+Plug 'ncm2/ncm2-bufword'
+"Plug 'ncm2/ncm2-tmux'
+Plug 'ncm2/ncm2-path'
+
+Plug 'ncm2/ncm2-jedi'
+
+Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+
+Plug 'tpope/vim-fugitive'
+Plug 'shumphrey/fugitive-gitlab.vim'
 
 " Airline, for better buffer displays
-Plugin 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
 
 " delimiMate -- Enables SublimeText-like autocompletion for quotes, brackets, etc.
-Plugin 'Raimondi/delimitMate'
+Plug 'Raimondi/delimitMate'
 
 " Monokai colorscheme
-Plugin 'sickill/vim-monokai'
+Plug 'sickill/vim-monokai'
 
 " Convenient commenting
-Plugin 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdcommenter'
+
+" Run code formatters upon saving a file
+Plug 'Chiel92/vim-autoformat'
 
 " Autoindent
-Plugin 'tpope/vim-sleuth'
+Plug 'tpope/vim-sleuth'
 
 " Handlebars support
-Plugin 'mustache/vim-mustache-handlebars'
+Plug 'mustache/vim-mustache-handlebars'
 
 " Rust language support
-Plugin 'rust-lang/rust.vim'
+Plug 'rust-lang/rust.vim'
 
 " Vim-orgmode
-Plugin 'jceb/vim-orgmode'
+Plug 'jceb/vim-orgmode'
 
 " Improved C syntax highlighting
-Plugin 'justinmk/vim-syntax-extra'
+"Plug 'justinmk/vim-syntax-extra'
 
 " Nice Go integrations and autocompletions
-Plugin 'fatih/vim-go'
+Plug 'fatih/vim-go'
 
 " An inter-vim wiki for my own use
-Plugin 'vimwiki/vimwiki'
+Plug 'vimwiki/vimwiki'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
+call plug#end()
+
+" Some Linux distributions set filetype in /etc/vimrc.
+" Clear filetype flags before changing runtimepath to force Vim to reload them.
+if exists("g:did_load_filetypes")
+  filetype off
+  filetype plugin indent off
 endif
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
-"
+filetype plugin indent on
+
+" In order to have project-specific vim configuration, we turn on exrc and
+" secure. With exrc on, vim will search for .vimrc files in the same dir it's
+" being run in, but won't traverse up the tree to find one.
+set exrc
+set secure
 
 " Turn on delimiMate
 let delimitMate_expand_cr = 1
@@ -75,14 +88,36 @@ let delimitMate_expand_cr = 1
 let g:airline#extensions#tabline#enabled = 1
 " Set the number next to the filename in the tab to show splits and tab number
 let g:airline#extensions#tabline#tab_nr_type = 2
+" Show both buffers and tabs
+" enable/disable displaying buffers with a single tab
+let g:airline#extensions#tabline#show_buffers = 1
+" Displays a superscript buffer index in the tabline
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+" Mappings for moving between buffers using vim-airline
+nmap <leader>1 <Plug>AirlineSelectTab1
+nmap <leader>2 <Plug>AirlineSelectTab2
+nmap <leader>3 <Plug>AirlineSelectTab3
+nmap <leader>4 <Plug>AirlineSelectTab4
+nmap <leader>5 <Plug>AirlineSelectTab5
+nmap <leader>6 <Plug>AirlineSelectTab6
+nmap <leader>7 <Plug>AirlineSelectTab7
+nmap <leader>8 <Plug>AirlineSelectTab8
+nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>- <Plug>AirlineSelectPrevTab
+nmap <leader>+ <Plug>AirlineSelectNextTab
+
 
 " Modify file view so it uses a tree structure
 let g:netrw_liststyle = 3
+" Causes opening a file to open it in the previous buffer. This has the effect
+" of letting you have an 'always open' pane beside the netrw view, and opening
+" something opens it in the 'always open' pane. AKA emulates an IDE file tree
+let g:netrw_browse_split=4
 
 " Make YouCompleteMe close it's preview window once you leave insert mode
-let g:ycm_autoclose_preview_window_after_insertion = 1
+"let g:ycm_autoclose_preview_window_after_insertion = 1
 " Ensure YouCompleteMe uses whichever version of python I'm using
-let g:ycm_python_binary_path = 'python'
+"let g:ycm_python_binary_path = 'python'
 
 " Add powerline font support
 let g:airline_powerline_fonts = 1
@@ -94,7 +129,7 @@ set hidden
 
 " Switching to a buffer means switching to the existing tab if the buffer is
 " open, or creating a new one if it's not.
-set switchbuf=usetab,newtab
+"set switchbuf=usetab,newtab
 
 " Turn on syntax highlighting
 syntax on
@@ -117,6 +152,7 @@ set listchars=tab:▸\ ,eol:¬,space:·,trail:␣
 " for all other lines.
 set number
 set relativenumber
+set numberwidth=4
 
 " Always show the statusline
 set laststatus=2
@@ -130,11 +166,14 @@ set statusline+=\ %P
 
 " Highlight matching search terms
 set hlsearch
+" Searches are case-insenitive unless they have an uppercase letter
+set ignorecase
+set smartcase
 
 " Set total number of available colors (forcefully) to 256
 set t_Co=256
 " Set the background color
-set t_AB=[48;5;%dm
+"set t_AB=[48;5;%dm
 " Set the foreground color
 set t_AF=[38;5;%dm
 
@@ -144,14 +183,17 @@ set backspace=indent,eol,start
 " Set the colorscheme
 colorscheme monokai
 
+" Allow for deleting the current buffer withough closing the open pane:
+" See here: https://stackoverflow.com/a/29179159
+noremap <leader>d :bp\|bd #<enter>
 " Clear last search
 noremap <silent> <leader>/ :let @/ = ""<CR>
 " Change search highlight color
-highlight Search ctermbg=yellow ctermfg=black
+"highlight Search ctermbg=yellow ctermfg=black
 
 " Create a "crosshair" on the current position
-set cursorline
-set cursorcolumn
+"set cursorline
+"set cursorcolumn
 
 " Map space to leader
 map <space> <leader>
@@ -176,18 +218,19 @@ map <leader>v :sp ~/.vimrc<enter>G
 " Function to source `vimrc` again. Originally from here:
 " https://github.com/adamryman/dotfiles/blob/c794063815e674c956bc2450c3bafa9067722016/home/adamryman/.vimrc#L124
 if !exists("*SourceAgain")
-	function! SourceAgain()
-		execute "source ~/.vimrc"
-		execute "set filetype=" . &filetype
-	endfunction
+  function! SourceAgain()
+    execute "source ~/.vimrc"
+    execute "set filetype=" . &filetype
+  endfunction
 endif
 :map <leader>s :call SourceAgain()<enter>
 
 " Open the netrw explorer
 map <leader>f :Vexplore<enter>
+let g:netrw_winsize = -25
 
 " Quick opening tabs
-map <leader>t :tabe<space>
+map <leader>t :e<space>
 
 " Toggleing viewing whitespace
 nmap <leader>W :set list!<enter>
@@ -197,8 +240,33 @@ nmap <leader>W :set list!<enter>
 nmap <leader>l :set spell! spelllang=en_us<CR>
 
 " Moving between buffers in normal mode
-nmap <leader>m :tabnext<enter>
-nmap <leader>n :tabprevious<enter>
+if !exists("*ConditionalChangeBufNext")
+  " Move to the next buffer as long as we're not in a 'netrw' buffer
+  function! ConditionalChangeBufNext()
+    if getbufvar(bufnr("%"), '&filetype') !=# "netrw"
+      execute "bnext"
+    endif
+  endfunction
+endif
+if !exists("*ConditionalChangeBufPrevious")
+  " Move to the previous buffer as long as we're not in a 'netrw' buffer
+  function! ConditionalChangeBufPrevious()
+    if getbufvar(bufnr("%"), '&filetype') !=# "netrw"
+      execute "bprevious"
+    endif
+  endfunction
+endif
+nmap <leader>m :call ConditionalChangeBufNext()<enter>
+nmap <leader>n :call ConditionalChangeBufPrevious()<enter>
+
+" Highlight all trailing whitespace in red
+" Taken from here: https://vim.fandom.com/wiki/Highlight_unwanted_spaces
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
 
 " Inserting newlines in normal mode without moving your cursor, from here:
 " http://vim.wikia.com/wiki/Insert_newline_without_entering_insert_mode
@@ -216,9 +284,9 @@ nmap <leader><leader>p :set paste!<enter>
 map <leader>" "+
 
 " Ensure YouCompleteMe will jump to definitions in a new tab
-let g:ycm_goto_buffer_command = 'new-tab'
+"let g:ycm_goto_buffer_command = 'new-tab'
 " Easier binds for the 'GoTo' functionality of YouCompleteMe
-nnoremap <leader>jd :tab YcmCompleter GoTo<CR>
+"nnoremap <leader>jd :tab YcmCompleter GoTo<CR>
 
 " Fix filetype associations for Markdown.
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
@@ -230,55 +298,99 @@ map <leader>cd <plug>NERDCommenterToggle
 
 nmap <F5> :silent !tmux split-window -h '/usr/bin/env python -i "%:p"' <CR>
 
-" Golang syntax highlighting
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_interfaces = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_types = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
 
 " Show info about current syntax highlighting unit below cursor
 map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
 
-
-" Function to allow syntax highlighting within golang templates. Sets the
-" syntax highlighting on lines containing a backtick to be a bogus type,
-" turning off syntax highlighting for that line, thus enabling it for the
-" following lines which contain templated go code
-if !exists("*RemoveHighlight")
-function! RemoveHighlight()
-	let curline = line('.')
-	let linenos = []
-
-	let firstmatch = search('`')
-	execute printf('syntax match synIgnoreLine /\%%%dl/', line('.'))
-
-	while search('`') != firstmatch
-		execute printf('syntax match synIgnoreLine /\%%%dl/', line('.'))
-	endwhile
-
-	call cursor(curline,0)
-endfunction
-endif
-map <leader>r :call RemoveHighlight()<enter>
 
 " Set the auto-export variable of vimwiki, so all wiki entries are rendered to
 " html on write. This big bunch of configuration is derived from
 " 'echo g:vimwiki_list' on a brand new install. It includes pretty much
 " everything.
 " let g:vimwiki_list = [{'maxhi': 0, 'css_name': 'style.css', 'auto_export': 1,\
-" 	'diary_index': 'diary', 'template_default': 'default',\
-" 	'nested_syntaxes': {}, 'auto_toc': 0, 'auto_tags': 0,\
-" 	'diary_sort': 'desc', 'path': '/home/leland/vimwiki/',\
-" 	'diary_link_fmt': '%Y-%m-%d', 'template_ext': '.tpl',\
-" 	'syntax': 'default', 'custom_wiki2html': '',\
-" 	'automatic_nested_syntaxes': 1, 'index': 'index',\
-" 	'diary_header': 'Diary', 'ext': '.wiki',\
-" 	'path_html': '/home/leland/vimwiki_html/', 'temp': 0,\
-" 	'template_path': '/home/leland/vimwiki/templates/',\
-" 	'list_margin': -1, 'diary_rel_path': 'diary/'}]
+"	'diary_index': 'diary', 'template_default': 'default',\
+"	'nested_syntaxes': {}, 'auto_toc': 0, 'auto_tags': 0,\
+"	'diary_sort': 'desc', 'path': '/home/leland/vimwiki/',\
+"	'diary_link_fmt': '%Y-%m-%d', 'template_ext': '.tpl',\
+"	'syntax': 'default', 'custom_wiki2html': '',\
+"	'automatic_nested_syntaxes': 1, 'index': 'index',\
+"	'diary_header': 'Diary', 'ext': '.wiki',\
+"	'path_html': '/home/leland/vimwiki_html/', 'temp': 0,\
+"	'template_path': '/home/leland/vimwiki/templates/',\
+"	'list_margin': -1, 'diary_rel_path': 'diary/'}]
 let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
+
+let g:should_autoformat = 1
+" A way to toggle the autoformatting of a file. Turn off with
+" :let g:should_autoformat = 0
+if !exists("*ConditionalAutoFormat")
+  " Move to the next buffer as long as we're not in a 'netrw' buffer
+  function! ConditionalAutoFormat()
+    if g:should_autoformat ==# 1
+      execute "Autoformat"
+    endif
+  endfunction
+endif
+" Enable automatic code formatting when saving a file
+au BufWrite * call ConditionalAutoFormat()
+" Toggle the 'should_autoformat' variable using <leader>af
+nnoremap <leader>af :silent if g:should_autoformat ==# 1 \| let g:should_autoformat=0 \| else \| let g:should_autoformat=1 \| endif <enter>
+
+" Disable the fallback on basic (but slow) vim based formatting
+let g:autoformat_autoindent = 0
+let g:autoformat_retab = 0
+let g:autoformat_remove_trailing_spaces = 0
+
+
+" Custom yapf style, recommended by Zaq?
+let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, join_multiple_lines: true, SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET: false, COALESCE_BRACKETS: true, DEDENT_CLOSING_BRACKETS: true, COLUMN_LIMIT: 120}\" -l '.a:firstline.'-'.a:lastline"
+
+" Stuff for autocompletion
+autocmd BufEnter  *  call ncm2#enable_for_buffer()
+
+" Affects the visual representation of what happens after you hit <C-x><C-o>
+" https://neovim.io/doc/user/insert.html#i_CTRL-X_CTRL-O
+" https://neovim.io/doc/user/options.html#'completeopt'
+"
+" This will show the popup menu even if there's only one match (menuone),
+" prevent automatic selection (noselect) and prevent automatic text injection
+" into the current line (noinsert).
+set completeopt=noinsert,menuone,noselect
+
+" suppress the annoying 'match x of y', 'The only match' and 'Pattern not
+" found' messages
+set shortmess+=c
+
+" CTRL-C doesn't trigger the InsertLeave autocmd . map to <ESC> instead.
+inoremap <c-c> <ESC>
+
+" When the <Enter> key is pressed while the popup menu is visible, it only
+" hides the menu. Use this mapping to close the menu and also start a new
+" line.
+inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" Disable the vim-go jump to definition, replacing with the LSP jtd
+let g:go_def_mapping_enabled = 0
+nnoremap <c-]> :call LanguageClient#textDocument_definition()<CR>
+
+" 'go': ['.git', 'go.mod'],
+let g:LanguageClient_rootMarkers = {
+      \ 'go': ['.git', 'go.mod'],
+      \ }
+
+"    \ 'go': ['bingo', '-format-style', 'gofmt', '-disable-func-snippet', '-enhance-signature-help'],
+"    \ 'go': ['tcp://127.0.0.1:4389'],
+"     \ 'go': ['gopls'],
+let g:LanguageClient_serverCommands = {
+     \ 'go': ['gopls'],
+      \ 'python': ['pyls'],
+      \ }
+
+" We have to point jedi at our virtualenv python
+let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
+" If we're working on a Python2 environment, we have to point our autocomplete
+" at our Python2 venv
