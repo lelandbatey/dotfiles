@@ -52,3 +52,10 @@ URxvt.color12:           #3838FF
 URxvt.perl-ext-common : default
 !URxvt.url-launcher     : firefox
 URxvt.matcher.button  : 1
+! Change which scancodes are sent using ctrl+arrow keys. Done for
+! compatibility with what Vim expects
+URxvt.keysym.Control-Up:      \033[1;5A
+URxvt.keysym.Control-Down:    \033[1;5B
+URxvt.keysym.Control-Left:    \033[1;5D
+URxvt.keysym.Control-Right:   \033[1;5C
+

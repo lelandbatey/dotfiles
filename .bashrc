@@ -68,7 +68,7 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
-
+xset r rate 200 80
 
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
@@ -145,11 +145,11 @@ function pSplit(){
 for x in \"\"\"$1\"\"\".split(\"$2\"): print(x);"
 }
 function pymodules(){
-	python -c "import pkgutil
+    python -c "import pkgutil
 import sys, importlib
 package = importlib.import_module(sys.argv[1])
 for importer, modname, ispkg in pkgutil.walk_packages(path=package.__path__, prefix=package.__name__+'.', onerror=lambda x: None):
-	print(modname)" $@
+    print(modname)" $@
 }
 
 function mp(){
@@ -184,6 +184,8 @@ function list-gomains(){
 #unset HISTFILESIZE
 export HISTSIZE=50000000
 export HISTFILESIZE=50000000
+
+export EDITOR='vim'
 
 # Defining colors for prompt
 bold='\e[1;39m'
@@ -251,10 +253,16 @@ if [[ -d "$HOME/bin/android-sdk-linux/" ]]; then
     export PATH=$PATH:$ANDROID_HOME/platform-tools
 fi
 
+
 # Sources nvm if it's installed.
 if [ -d "$HOME/.nvm/" ]; then
     source "$HOME/.nvm/nvm.sh"
     source "$HOME/.nvm/bash_completion"
+fi
+
+# Sources my work config, if it exists
+if [ -s "$HOME/.work_conf.sh" ]; then
+    source "$HOME/.work_conf.sh"
 fi
 
 # If terminal launched inside X, the DISPLAY variable will already be set.
@@ -263,7 +271,6 @@ fi
 if [ -z "$DISPLAY" ]; then
     DISPLAY=":0.0"
 fi
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
-# Source all the work-specific stuff
-source "$HOME/.work-conf.sh"
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
