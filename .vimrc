@@ -288,6 +288,11 @@ map <leader>" "+
 " Easier binds for the 'GoTo' functionality of YouCompleteMe
 "nnoremap <leader>jd :tab YcmCompleter GoTo<CR>
 
+" For those times where vim doesn't have access to the system clipboard, this
+" command exists to toggle the line-numbers on and off to allow for copying by
+" selection in the terminal.
+nmap <leader><leader>c :set number! relativenumber!<enter>
+
 " Fix filetype associations for Markdown.
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 " Fix filetype associations for Gotemplate files.
@@ -394,3 +399,8 @@ let g:LanguageClient_serverCommands = {
 let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
 " If we're working on a Python2 environment, we have to point our autocomplete
 " at our Python2 venv
+
+let g:rustfmt_autosave = 1
+
+" Prevent the bell sound in vim (it's annoying in windows)
+set visualbell
