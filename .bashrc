@@ -274,3 +274,9 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+export ANDROID_HOME="$HOME/Android/Sdk/"
+export PATH=$PATH:$ANDROID_HOME/build-tools/23.0.1/
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/tools
+

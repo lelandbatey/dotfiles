@@ -14,3 +14,5 @@ set mark-symlinked-directories on
 
 # Keybinding to re-read inputrc file
 "\C-x\C-r": re-read-init-file
+
+set bell-style none
