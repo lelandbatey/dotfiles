@@ -9,24 +9,24 @@ import os.path
 import shutil
 import os
 
-ACTION_TYPE = "\n\n\t\
-safe[default]\n\t\
-bashmarks (requires 'prepvim' be run first)\n\t\
-prepvim\n"
+ACTION_TYPE = ("\n\n\t" "safe[default]\n\t" "bashmarks (requires 'prepvim' be run first)\n\t" "prepvim\n")
 
 HOMEDIR = os.path.expanduser('~')
 
-DESC = """Installation script for Leland Batey dotfiles repo. If this your \
-first time running this on a new installation, run this command with the "--\
-act prepvim" flag to properly prepare all the necessary  vim packages."""
+DESC = (
+    "Installation script for Leland Batey dotfiles repo. If this your "
+    'first time running this on a new installation, run this command with the "--'
+    'act prepvim" flag to properly prepare all the necessary  vim packages.'
+)
 
 PARSER = argparse.ArgumentParser(description=DESC)
-PARSER.add_argument('--act', default='', help='Action to be taken;'+ACTION_TYPE)
+PARSER.add_argument('--act', default='', help='Action to be taken;' + ACTION_TYPE)
 
 # Access the results of arguments as stuff stored in 'ARGS'
 ARGS = PARSER.parse_args()
 
 ARCHIVE_DIR = os.path.join(HOMEDIR, "dotfiles_backup", datetime.datetime.now().strftime('%Y-%m-%d--%H.%M.%S'))
+
 
 def install_component(*args):
     """Installs a 'component' within this repository into it's cooresponding
@@ -75,8 +75,6 @@ def install_component(*args):
     print("Created symlink from target '{}' to '{}'".format(repo_path, dest_path))
 
 
-
-
 def safe_configs():
     """Installs the "safe" configuration files.
 
@@ -91,6 +89,8 @@ def safe_configs():
     install_component('.vim')
     install_component('.gitignore_global')
     install_component('.bash_profile')
+    install_component('.emacs.d')
+
 
 def prepvim():
     """Installs all the submodules. This is mostly for Vim."""
@@ -99,6 +99,7 @@ def prepvim():
     call(["git", "submodule", "foreach", "git", "submodule", "init"])
     call(["git", "submodule", "foreach", "git", "submodule", "update"])
     print("All git submodules properly initialized and updated.")
+
 
 def install_bashmarks():
     """Installs bashmarks. Requires you to have run "prepvim" prior to this
@@ -118,8 +119,9 @@ def main():
         install_bashmarks()
     else:
         errstr = "Specified action ('--act') \
-was not of any of the necessary types:"+ACTION_TYPE
+was not of any of the necessary types:" + ACTION_TYPE
         print(errstr)
+
 
 if __name__ == '__main__':
     main()
