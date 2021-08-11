@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+'''
+Shows the most frequently used variables in a block of code. Most frequent is
+at the top. Useful for figuring out what the free variables in a block of code
+are. Useful for figuring out exactly which variables are being used in a block
+of code.
+'''
+
+import keyword
+import sys
+import re
+
+
+def remove_string_literal(s, opening='"'):
+    if opening == '"':
+        s = remove_string_literal(s, "'")
+    OUTSIDE_STRING = 'outside string'
+    INSIDE_STRING = 'inside string'
+    STATE = OUTSIDE_STRING
+    previous = ''
+    corrected = ''
+    considering = ''
+    for c in s:
+        if STATE == OUTSIDE_STRING:
+            if c == opening and previous != '\\':
+                STATE = INSIDE_STRING
+                previous = c
+                corrected += c
+                continue
+            previous = c
+            corrected += c
+        elif STATE == INSIDE_STRING:
+            if c == opening and previous != '\\':
+                STATE = OUTSIDE_STRING
+                previous = c
+                corrected += c
+                considering = ''
+                continue
+            previous = c
+            considering += c
+    if considering:
+        corrected += considering
+    return corrected
+
+
+def test_remove_string_literal():
+    cases = [
+        ('''who ="is on \\"first?\\""''', 'who =""'),
+        ("""who ='is on \\'first?\\''""", "who =''"),
+        # Not a complete string literal (single quote)
+        ('''who ='is on first''', '''who ='is on first'''),
+        # Not a complete string literal (double quote)
+        ('''who ="is on first''', '''who ="is on first'''),
+        # Both delimiters combined
+        ('''can = "can't or shouldn't?"''', 'can = ""'),
+        ("""can = 'can"t or shouldn"t?'""", "can = ''"),
+        # Multiple strings
+        ("""who, when ='is on \\'first?\\'', 'right now?'""", "who, when ='', ''"),
+    ]
+    for (case, want) in cases:
+        got = remove_string_literal(case)
+        if got != want:
+            print('got:', got)
+            print('want:', want)
+        assert got == want
+
+
+def is_builtin(s):
+    return s in [
+        'abs(', 'delattr(', 'hash(', 'memoryview(', 'set(', 'all(', 'dict(', 'help(', 'min(', 'setattr(', 'any(',
+        'dir(', 'hex(', 'next(', 'slice(', 'ascii(', 'divmod(', 'id(', 'object(', 'sorted(', 'bin(', 'enumerate(',
+        'input(', 'oct(', 'staticmethod(', 'bool(', 'eval(', 'int(', 'open(', 'str(', 'breakpoint(', 'exec(',
+        'isinstance(', 'ord(', 'sum(', 'bytearray(', 'filter(', 'issubclass(', 'pow(', 'super(', 'bytes(', 'float(',
+        'iter(', 'print(', 'tuple(', 'callable(', 'format(', 'len(', 'property(', 'type(', 'chr(', 'frozenset(',
+        'list(', 'range(', 'vars(', 'classmethod(', 'getattr(', 'locals(', 'repr(', 'zip(', 'compile(', 'globals(',
+        'map(', 'reversed(', '__import__(', 'complex(', 'hasattr(', 'max(', 'round('
+    ]
+
+
+def main():
+    test_remove_string_literal()
+    code = sys.stdin.read()
+    code = remove_string_literal(code)
+    print(code)
+    matches = re.findall(r'(?=(\W\w+\W))', code)
+    good_matches = list()
+    for match in matches:
+        ms = match.strip()
+        if keyword.iskeyword(ms): continue
+        if match[0] == '.': continue
+        if is_builtin(ms): continue
+        if ms == 'f"' or ms == "f'": continue
+        good_matches.append(match)
+    clean_matches = [re.findall(r'\w+', x)[0] for x in good_matches]
+    uniques = sorted(list(set(clean_matches)), key=clean_matches.count, reverse=True)
+    print('\n'.join(uniques))
+    # print(list(clean_matches))
+
+
+if __name__ == '__main__': main()

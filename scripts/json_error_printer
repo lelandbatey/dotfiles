@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+
+data = json.load(sys.stdin)
+
+
+def print_errmessage(obj, prefix=None):
+    if prefix is None:
+        prefix = list()
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            print_errmessage(v, prefix=prefix + [k])
+        elif isinstance(v, str):
+            for sentinel in ["err", "trace", "fail"]:
+                if sentinel in v.lower():
+                    print("\n'{}':\n{}\n\n".format('.'.join(prefix + [k]), v))
+                    break
+
+
+print_errmessage(data)
