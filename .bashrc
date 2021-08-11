@@ -127,6 +127,8 @@ alias gshow="git show --color --pretty=format:%b" # Pretty-printing of a commit 
 
 alias vnv="source ~/bin/venv-3/bin/activate"
 alias vnv2="source ~/bin/venv/bin/activate"
+alias xopen="xdg-open"
+alias cl="fc -ln -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | xclip -sel clip"
 
 function lag(){ # Stands for "list all gits" and it just lists all the git repos in current dir
     find $PWD -name ".git" -type d | sed 's,/*[^/]\+/*$,,'
@@ -274,9 +276,18 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export FZF_DEFAULT_COMMAND='ag -l --nocolor --hidden -g ""'
 
-export ANDROID_HOME="$HOME/Android/Sdk/"
-export PATH=$PATH:$ANDROID_HOME/build-tools/23.0.1/
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$ANDROID_HOME/tools
+[ -f ~/.config/broot/launcher/bash/br ] && source /home/leland/.config/broot/launcher/bash/br
+
+
+[ -d ~/.poetry/ ] && export PATH="$HOME/.poetry/bin:$PATH"
+
+# Source pyenv if it's installed
+if [ -d "$HOME/bin/pyenv/" ]; then
+    export PYENV_ROOT="$HOME/bin/pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+fi
 
