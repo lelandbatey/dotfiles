@@ -41,6 +41,7 @@ urxvt*font:xft:Inconsolata:size=10,xft:Inconsolata\ for\ Powerline:size=10,xft:S
 !URxvt.font: xft:Consolas:size=13, xft:Inconsolata\ for\ Powerline
 URxvt*letterSpace: -1
 URxvt.scrollBar:off
+URxvt.saveLines:20000
 URxvt.foreground:grey80
 URxvt.depth:32
 !URxvt.background: rgba:1300/1900/2600/ffff
