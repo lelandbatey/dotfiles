@@ -24,12 +24,15 @@
 # class                 border  backgr. text    indicator child_border
 client.focused          #4a7730 #4a7730 #ffffff #78f52f   #4a7730
 client.focused_inactive #6f776b #606b62 #ffffff #484e50   #6f776b
-client.unfocused        #202020 #0c2200 #888888 #292d2e   #0c2200
+client.unfocused        #526B4A #0c2200 #888888 #292d2e   #526B4A
 client.urgent           #2f343a #900000 #ffffff #900000   #900000
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
 client.background       #ffffff
 
+# Bind to the "ALT" key
+set $alt Mod1
+# Bind to the "Super" or "Windows" key
 set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
@@ -145,6 +148,21 @@ bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
 
+# This second set of workspaces allows for a "second dimension" of workspaces.
+# The real reason I've added these is because I frequently move between 1-4
+# since they're easy to reach with my left hand. These add more workspaces
+# accessible with the left hand.
+bindsym $alt+1 workspace 11
+bindsym $alt+2 workspace 12
+bindsym $alt+3 workspace 13
+bindsym $alt+4 workspace 14
+bindsym $alt+5 workspace 15
+bindsym $alt+6 workspace 16
+bindsym $alt+7 workspace 17
+bindsym $alt+8 workspace 18
+bindsym $alt+9 workspace 19
+bindsym $alt+0 workspace 20
+
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
 bindsym $mod+Shift+2 move container to workspace 2
@@ -156,6 +174,17 @@ bindsym $mod+Shift+7 move container to workspace 7
 bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
+
+bindsym $alt+Shift+1 move container to workspace 11
+bindsym $alt+Shift+2 move container to workspace 12
+bindsym $alt+Shift+3 move container to workspace 13
+bindsym $alt+Shift+4 move container to workspace 14
+bindsym $alt+Shift+5 move container to workspace 15
+bindsym $alt+Shift+6 move container to workspace 16
+bindsym $alt+Shift+7 move container to workspace 17
+bindsym $alt+Shift+8 move container to workspace 18
+bindsym $alt+Shift+9 move container to workspace 19
+bindsym $alt+Shift+0 move container to workspace 20
 
 # move a workspace to another monitor
 bindsym $mod+z move workspace to output left
@@ -217,4 +246,4 @@ exec --no-startup-id xfce4-power-manager
 exec --no-startup-id parcellite
 
 exec --no-startup-id xautolock -detectsleep \
-  -time 5 -locker "/home/leland/bin/locker" &
+  -time 10 -locker "/home/leland/bin/locker" &

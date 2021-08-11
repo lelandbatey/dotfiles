@@ -13,3 +13,6 @@ set autoindent    " copy indent from current line when starting a new line
 " Highlight trailing whitespace in red
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
+
+" Run the current python file by hitting F5
+nnoremap <buffer> <F5> :exec '!python3' shellescape(@%, 1)<cr>
