@@ -38,6 +38,10 @@ Plug 'Raimondi/delimitMate'
 " Monokai colorscheme
 Plug 'sickill/vim-monokai'
 
+" A github-like colorscheme. Great for printing with:
+"     vim -c 'colorscheme morning' -c 'let g:html_number_lines=1' -c 'run! syntax/2html.vim' -c 'wqa' <FILENAME>
+Plug 'cormacrelf/vim-colors-github'
+
 " Convenient commenting
 Plug 'scrooloose/nerdcommenter'
 
@@ -64,6 +68,23 @@ Plug 'fatih/vim-go'
 
 " An inter-vim wiki for my own use
 Plug 'vimwiki/vimwiki'
+
+" Add syntax highlighting for Apex, the Salesforce plugin language
+Plug 'ejholmes/vim-forcedotcom'
+
+" Support for postgres-specific SQL syntax
+Plug 'lifepillar/pgsql.vim'
+
+" Floobits
+Plug 'floobits/floobits-neovim'
+
+" Install the FZF plugin because I want functionality like Projectile in Emacs
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+" Add ability to generate a link to the current file and line, if the file
+" being edited is in a gitlab/github repository.
+Plug 'iautom8things/gitlink-vim'
 
 call plug#end()
 
@@ -113,6 +134,9 @@ let g:netrw_liststyle = 3
 " of letting you have an 'always open' pane beside the netrw view, and opening
 " something opens it in the 'always open' pane. AKA emulates an IDE file tree
 let g:netrw_browse_split=4
+" Hide files which are build artifacts
+let g:netrw_hide=1
+let g:netrw_list_hide='.*\.pyc$'
 
 " Make YouCompleteMe close it's preview window once you leave insert mode
 "let g:ycm_autoclose_preview_window_after_insertion = 1
@@ -121,6 +145,9 @@ let g:netrw_browse_split=4
 
 " Add powerline font support
 let g:airline_powerline_fonts = 1
+
+" Make PostgreSQL the default SQL syntax format
+let g:sql_type_default = 'pgsql'
 
 " When opening a new buffer, moves the previous buffer into the background and
 " allows the new buffer to be opened, and hides the previous buffer, instead
@@ -142,6 +169,9 @@ set shiftwidth=4
 " Turn on autoindenting. This means a new line has the same indentation as the
 " line preceding it.
 set autoindent
+
+" Turn on indenttion when soft-wrapping
+set breakindent
 
 " Makes tab and newline characters visible
 " To toggle, type `set list!`
@@ -192,8 +222,8 @@ noremap <silent> <leader>/ :let @/ = ""<CR>
 "highlight Search ctermbg=yellow ctermfg=black
 
 " Create a "crosshair" on the current position
-"set cursorline
-"set cursorcolumn
+" set cursorline
+" set cursorcolumn
 
 " Map space to leader
 map <space> <leader>
@@ -229,15 +259,26 @@ endif
 map <leader>f :Vexplore<enter>
 let g:netrw_winsize = -25
 
+" Quickly search for a file in my directory by the name of that file with FZF
+map <leader>ff :FZF<enter>
+
+" Quickly search for the contents of a file in my directory with Ag/Rg
+map <leader>fc :Ag <C-R><C-W><CR>
+
 " Quick opening tabs
 map <leader>t :e<space>
+
+" Open a sibling file
+nnoremap <leader>sf :e <C-R>=expand('%:p:h')<CR>
 
 " Toggleing viewing whitespace
 nmap <leader>W :set list!<enter>
 
-
 " Toggle spellchecking
 nmap <leader>l :set spell! spelllang=en_us<CR>
+
+" Search for the current visual selection with '//'
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 
 " Moving between buffers in normal mode
 if !exists("*ConditionalChangeBufNext")
@@ -256,6 +297,26 @@ if !exists("*ConditionalChangeBufPrevious")
     endif
   endfunction
 endif
+
+" Courtesy of my coworker Logan Brooke
+if !exists("SearchJustify")
+" using a set of keystrokes like /^\s*\w*\s*<CR>vi):call SearchJustify(30) to
+" turn:
+"     CREATE TABLE IF NOT EXISTS pickup_invite_request(
+"         id BIGSERIAL NOT NULL PRIMARY KEY,
+"         type VARCHAR(256) NOT NULL DEFAULT ''
+"     );
+" into text like this:
+"     CREATE TABLE IF NOT EXISTS pickup_invite_request(
+"         id                        BIGSERIAL NOT NULL PRIMARY KEY,
+"         type                      VARCHAR(256) NOT NULL DEFAULT ''
+"     );
+  function! SearchJustify(count)
+    let format = "%-" . a:count . "s"
+    s//\=printf(format, submatch(0))
+  endfunc
+endif
+
 nmap <leader>m :call ConditionalChangeBufNext()<enter>
 nmap <leader>n :call ConditionalChangeBufPrevious()<enter>
 
@@ -301,7 +362,7 @@ autocmd BufNewFile,BufReadPost *.gotemplate set filetype=go
 
 map <leader>cd <plug>NERDCommenterToggle
 
-nmap <F5> :silent !tmux split-window -h '/usr/bin/env python -i "%:p"' <CR>
+"nmap <F5> :silent !tmux split-window -h '/usr/bin/env python -i "%:p"' <CR>
 
 
 " Show info about current syntax highlighting unit below cursor
@@ -324,6 +385,7 @@ map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<
 "	'template_path': '/home/leland/vimwiki/templates/',\
 "	'list_margin': -1, 'diary_rel_path': 'diary/'}]
 let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
+let g:vimwiki_url_maxsave=0
 
 let g:should_autoformat = 1
 " A way to toggle the autoformatting of a file. Turn off with
@@ -348,7 +410,12 @@ let g:autoformat_remove_trailing_spaces = 0
 
 
 " Custom yapf style, recommended by Zaq?
-let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, join_multiple_lines: true, SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET: false, COALESCE_BRACKETS: true, DEDENT_CLOSING_BRACKETS: true, COLUMN_LIMIT: 120}\" -l '.a:firstline.'-'.a:lastline"
+let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, join_multiple_lines: true, SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET: false, COALESCE_BRACKETS: true, DEDENT_CLOSING_BRACKETS: true, COLUMN_LIMIT: 100}\" -l '.a:firstline.'-'.a:lastline"
+
+" Create a command to link to a file in Gitlab/Github
+if !exists("*GitLink")
+  command GitLink :echo gitlink#GitLink()
+endif
 
 " Stuff for autocompletion
 autocmd BufEnter  *  call ncm2#enable_for_buffer()
@@ -394,6 +461,9 @@ let g:LanguageClient_serverCommands = {
      \ 'go': ['gopls'],
       \ 'python': ['pyls'],
       \ }
+" Set up logging of language client
+let g:LanguageClient_loggingFile = expand('~/.vim/LanguageClient.log')
+let g:LanguageClient_loggingLevel = "WARN"
 
 " We have to point jedi at our virtualenv python
 let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'

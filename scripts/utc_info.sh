@@ -17,4 +17,6 @@ printf "Time in UTC/GMT: $UTCNOW (24 hour time)\n"
 printf "                 $(TZ='UTC' date -d "@$EPOCH_TIME" +'%a %b %d %I:%M:%S %p %Z %Y') (12 hour time)\n"
 #printf "Current time here      : $(date)\n"
 printf "Time here      : $(date -d "@$EPOCH_TIME" +'%a %b %d %H:%M:%S %p %Z %Y')\n"
+GOLANG_HASH_TS="$(TZ='UTC' date -d "@$EPOCH_TIME" +'%Y%m%d%H%M%S')"
+printf "Golang mod hash: $GOLANG_HASH_TS (for use as hash pseudo-version)\n"
 
