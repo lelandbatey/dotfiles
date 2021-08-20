@@ -387,6 +387,18 @@ map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<
 let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
 let g:vimwiki_url_maxsave=0
 
+" Vimwiki supports markdown, and Vimwiki tries to apply its own syntax
+" highlighting to all filetypes it supports, even if we're not editing a file
+" within a vimwiki - registered folder.
+"     echo g:vimwiki_global_vars['ext2syntax']
+" That's unfortunate, since it means all my .md files are being displayed with
+" filetype 'vimwiki', and the vimwiki syntax highlighting is really slow
+" compared to the ''normal'' syntax highlighting for markdown (which we can
+" get via 'set ft=markdown').
+" To fix this, we disable the vimwiki plugin unless we're inside of a
+" registered vimwiki directory, such as '/home/leland/vimwiki/'
+let g:vimwiki_global_ext = 0
+
 let g:should_autoformat = 1
 " A way to toggle the autoformatting of a file. Turn off with
 " :let g:should_autoformat = 0
