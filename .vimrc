@@ -245,6 +245,12 @@ nnoremap <silent> <leader><leader>k :exe "resize" . (winheight(0) * 2/3)<CR>
 " Create map to edit vimrc
 map <leader>v :sp ~/.vimrc<enter>G
 
+" Allow for quickly searching for an identifier across a codebase
+nnoremap <silent> <leader>fc yiw:Ag <C-r>"<CR>
+vnoremap <silent> <leader>fc y:Ag <C-r>"<CR>
+
+nnoremap <leader>ff :FZF<CR>
+
 " Function to source `vimrc` again. Originally from here:
 " https://github.com/adamryman/dotfiles/blob/c794063815e674c956bc2450c3bafa9067722016/home/adamryman/.vimrc#L124
 if !exists("*SourceAgain")
@@ -486,3 +492,4 @@ let g:rustfmt_autosave = 1
 
 " Prevent the bell sound in vim (it's annoying in windows)
 set visualbell
+

@@ -68,7 +68,7 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
-xset r rate 200 80
+#xset r rate 200 80
 
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
@@ -253,6 +253,12 @@ if [[ -d "$HOME/bin/android-sdk-linux/" ]]; then
     export ANDROID_HOME="$HOME/bin/android-sdk-linux/"
     export PATH=$PATH:$ANDROID_HOME/tools
     export PATH=$PATH:$ANDROID_HOME/platform-tools
+fi
+
+
+# Add our home binary directory to our path
+if [ -d "$HOME/bin/" ]; then
+    export PATH="$PATH:$HOME/bin/"
 fi
 
 
