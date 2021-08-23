@@ -1,9 +1,11 @@
-        __  __     __         _______ __
-       / / / /__  / /___     / ____(_) /__  _____
-      / /_/ / _ \/ / __ \   / /_  / / / _ \/ ___/
-     / __  /  __/ / /_/ /  / __/ / / /  __(__  )
-    /_/ /_/\___/_/ .___/  /_/   /_/_/\___/____/
-                /_/
+```
+    __  __     __         _______ __
+   / / / /__  / /___     / ____(_) /__  _____
+  / /_/ / _ \/ / __ \   / /_  / / / _ \/ ___/
+ / __  /  __/ / /_/ /  / __/ / / /  __(__  )
+/_/ /_/\___/_/ .___/  /_/   /_/_/\___/____/
+            /_/
+```
 
 Author: Leland Batey
 
@@ -1098,4 +1100,84 @@ the system version of Firefox.
 
 To change the `$PATH`, I had to modify the `.xsessionrc` file to set the
 exported `$PATH`.
+
+# Using Sphinx with a Python Project
+
+I've tried to use Sphinx with other Python projects, hoping it'd work how I
+want it to work. However, Sphinx never quite did what I wanted. After playing
+with Sphinx today, I think I understand why, what was at issue with my mindset,
+and what I should do about it now.
+
+## Sphinx isn't what I thought I wanted
+
+When last I reviewed Sphinx, I was trying to create documentation for some
+Python project of mine. At the time though, I was trying to find something for
+Python which worked the same way as the tool `go doc` in the Golang ecosystem.
+I wanted an opinionated, unfancy, all-in-one automatic documentation viewer,
+and I wanted all the documentation to come directly and _only_ from the
+comments in the source code. I also wanted the default "theme" to be acceptable
+looking, and also to look like other themes I've seen in the Python ecosystem.
+
+Back then, I'd tried to make Sphinx do all that form, but I found it did not do
+what I wanted. I think I tried to use some special plugin to automatically
+generate documentation for an entire project, but that didn't work and I gave
+up.
+
+> In hindsight, the closest thing we have to the `go doc` tool in Python is the
+> `pydoc` tool, usable via something like `python3 -m pydoc -p 123` to serve
+> documentation on `localhost:1234`. It'll generate documentation, that
+> documentation just looks really rough. However, it is included in Python, it
+> can serve HTML itself, and it's extremely functional. Sad that I overlooked
+> it at the time.
+
+What I've learned today is that even though Sphinx isn't `go doc`, it's still
+really good and I will definitely keep using it.
+
+## Sphinx is still great
+
+Turns out Sphinx is more like a super-powerful wiki generator, and it can do
+limited (but also sufficient) automatic class documentation. I think that
+Sphinx is best positioned as a tool for generating documentation for a project
+which you want to be publicly documented, but it's bad at generating useful
+documentation for a large repo with no-overall documentation (which is what I'd
+tried to use it for previously).
+
+## How to get nice docs with Sphinx?
+
+- Download sphinx (`poetry add --dev sphinx` or `pip install sphinx`)
+- Create a new directory in your repo to house your documentation. I based this
+  off the `pymongo` repo, so put it into a `doc/` folder at the project root.
+  That's `cd $(git rev-parse --show-toplevel) && mkdir doc && cd doc`
+- Set up the sphinx docs. `sphinx-quickstart`. Mash 'enter', but put in a name
+- Now you have an `index.rst` file in `doc/`, and that is where you can start
+  populating the documentation. I put human descriptions of how to do things
+  into `index.rst`, and I put the raw API documentation into a new file called
+  `doc/api.rst`. To include `api.rst` into the file tree, I have to add `api`
+  to the `toctree` directive of `index.rst`. See [here for an example in pymongo docs.](https://github.com/mongodb/mongo-python-driver/blame/fa9531b4bf4cde8bc1464f5b014140e0c96286f0/doc/index.rst#L118)
+  ```
+  .. toctree::
+     :maxdepth: 2
+     :caption: Contents:
+
+     api
+  ```
+- To populate portion of the docs which are automatic documentation, you can
+  use `autodoc` plugin of Sphinx. Add the `sphinx.ext.autodoc` plugin to the
+  `doc/conf.py` under `extensions`. Then in the `doc/api.rst` file, you can
+  automatically document the entire module with an `automodule` and `:members:`
+  directive like so:
+  ```
+  .. automodule:: comic_html_view_generator
+     :members:
+  ```
+- Then run a `make html` command in the `doc/` directory and the documentation
+  will be automatically built in the `doc/_build` directory.
+- I further recommend installing the `sphinx-rtd-theme` plugin to get a
+  "ReadTheDocs" style on the documentation. Their [docs are here.](https://sphinx-rtd-theme.readthedocs.io/en/stable/)
+
+What's great about this is that with a single `automodule` statement, that
+module and _all submodules, recursively_ will be documented linearly in that
+single `api` page. So if all you need is this straightforward documentation, it
+does work fantastically!
+
 
