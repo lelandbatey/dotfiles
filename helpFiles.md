@@ -1175,9 +1175,10 @@ tried to use it for previously).
 - I further recommend installing the `sphinx-rtd-theme` plugin to get a
   "ReadTheDocs" style on the documentation. Their [docs are here.](https://sphinx-rtd-theme.readthedocs.io/en/stable/)
 
-What's great about this is that with a single `automodule` statement, that
-module and _all submodules, recursively_ will be documented linearly in that
-single `api` page. So if all you need is this straightforward documentation, it
-does work fantastically!
+What stinks is that each modules will _not_ be documented recursively, so if we
+want that, we need a script to create all the files we'll need, populate them
+with what we'll need, then add them to the index.rst
+
+Thankfully, I've written just such a script here: https://gist.github.com/lelandbatey/bea331e365ee60d1fe55195f048b5498
 
 
