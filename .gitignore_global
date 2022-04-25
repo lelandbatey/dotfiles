@@ -18,6 +18,7 @@
 *.o
 *.so
 __pycache__/
+**/__pycache__
 *.pyc
 
 # Packages #

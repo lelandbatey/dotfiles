@@ -68,7 +68,7 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
-#xset r rate 200 80
+xset r rate 200 80
 
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then

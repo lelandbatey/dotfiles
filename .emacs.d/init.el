@@ -19,6 +19,7 @@
 ;; use-package. It's never used beyond merely being loaded
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
+;(add-to-list #'straight-recipe-repositories 'straight-pull-recipe-repositories)
 
 (use-package evil
   :init

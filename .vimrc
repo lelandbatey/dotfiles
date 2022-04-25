@@ -1,5 +1,6 @@
 "let g:python_host_prog='/home/leland/bin/venv/bin/python'
-let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
+"let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
+let g:python3_host_prog='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -76,7 +77,7 @@ Plug 'ejholmes/vim-forcedotcom'
 Plug 'lifepillar/pgsql.vim'
 
 " Floobits
-Plug 'floobits/floobits-neovim'
+"Plug 'floobits/floobits-neovim'
 
 " Install the FZF plugin because I want functionality like Projectile in Emacs
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -85,6 +86,9 @@ Plug 'junegunn/fzf.vim'
 " Add ability to generate a link to the current file and line, if the file
 " being edited is in a gitlab/github repository.
 Plug 'iautom8things/gitlink-vim'
+
+" Fixes Python indenting of braces and brackets
+Plug 'Vimjas/vim-python-pep8-indent'
 
 call plug#end()
 
@@ -405,6 +409,15 @@ let g:vimwiki_url_maxsave=0
 " registered vimwiki directory, such as '/home/leland/vimwiki/'
 let g:vimwiki_global_ext = 0
 
+" use the python formatter called 'black' over 'yapf'
+"let g:formatters_python = ['black', 'yapf', 'autopep8']
+let g:formatters_python = ['yapf']
+
+" Fix Vim combining stdin and stdout when running another command, usually a
+" problem when running black
+"     https://vi.stackexchange.com/a/11731
+set shellredir=>
+
 let g:should_autoformat = 1
 " A way to toggle the autoformatting of a file. Turn off with
 " :let g:should_autoformat = 0
@@ -428,7 +441,7 @@ let g:autoformat_remove_trailing_spaces = 0
 
 
 " Custom yapf style, recommended by Zaq?
-let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, join_multiple_lines: true, SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET: false, COALESCE_BRACKETS: true, DEDENT_CLOSING_BRACKETS: true, COLUMN_LIMIT: 100}\" -l '.a:firstline.'-'.a:lastline"
+let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, join_multiple_lines: true, SPACE_BETWEEN_ENDING_COMMA_AND_CLOSING_BRACKET: false, COALESCE_BRACKETS: true, DEDENT_CLOSING_BRACKETS: true, COLUMN_LIMIT: 120}\" -l '.a:firstline.'-'.a:lastline"
 
 " Create a command to link to a file in Gitlab/Github
 if !exists("*GitLink")
@@ -465,6 +478,12 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " Disable the vim-go jump to definition, replacing with the LSP jtd
 let g:go_def_mapping_enabled = 0
+
+" Use gofmt on save to prevent goimports or gopls from taking a long time
+" writing to disk.
+let g:go_fmt_command = 'gofmt'
+let g:go_imports_autosave = 0
+
 nnoremap <c-]> :call LanguageClient#textDocument_definition()<CR>
 
 " 'go': ['.git', 'go.mod'],
@@ -477,14 +496,15 @@ let g:LanguageClient_rootMarkers = {
 "     \ 'go': ['gopls'],
 let g:LanguageClient_serverCommands = {
      \ 'go': ['gopls'],
-      \ 'python': ['pyls'],
+      \ 'python': ['pylsp'],
       \ }
 " Set up logging of language client
 let g:LanguageClient_loggingFile = expand('~/.vim/LanguageClient.log')
 let g:LanguageClient_loggingLevel = "WARN"
 
 " We have to point jedi at our virtualenv python
-let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
+"let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
+let g:ncm2_jedi#environment='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
 " If we're working on a Python2 environment, we have to point our autocomplete
 " at our Python2 venv
 

@@ -1,22 +1,21 @@
 #!/bin/bash
-# Install with 
+# Install with
 #
 # curl https://raw.githubusercontent.com/lelandbatey/dotfiles/master/autoinstall.sh | sh
 
 sudo apt-get update
-sudo apt-get -y install git make htop python-pip
+sudo apt-get -y install git make htop python3.8-venv
 
 # Change the default login shell to bash
 sudo chsh -s $(which bash) $(echo $USER)
 
-sudo pip install virtualenv
 
 if [ ! -d "$HOME/bin" ]; then
 	mkdir "$HOME/bin"
 fi
 
 if [ ! -d "$HOME/bin/venv" ]; then
-	virtualenv "$HOME/bin/venv"
+	python3 -m venv "$HOME/bin/venv-3"
 fi
 
 
@@ -25,6 +24,6 @@ cd ~
 git clone "https://github.com/lelandbatey/dotfiles.git"
 cd dotfiles
 
-python install.py --act safe
-#python install.py --act prepvim
-#python install.py --act bashmarks
+python3 install.py --act safe
+#python3 install.py --act prepvim
+#python3 install.py --act bashmarks
