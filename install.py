@@ -44,6 +44,8 @@ def install_component(*args):
     else:
         print("Cannot understand arguments:", args)
         return
+    if '~' in dest_path:
+        dest_path = dest_path.replace('~', HOMEDIR)
 
     dest_path = os.path.join(dest_path, repo_path)
     # Assumes that the current working directory is within the repository.
@@ -90,6 +92,8 @@ def safe_configs():
     install_component('.gitignore_global')
     install_component('.bash_profile')
     install_component('.emacs.d')
+    install_component('.editorconfig')
+    install_component('alacritty', '~/.config/')
 
 
 def prepvim():

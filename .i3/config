@@ -62,10 +62,11 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec urxvt
+#bindsym $mod+Return exec urxvt
+bindsym $mod+Return exec alacritty
 # start a terminal in the same directory
 #bindsym $mod+Shift+Return exec i3-sensible-terminal -cd "`xcwd`"
-bindsym $mod+Shift+Return exec urxvt -cd "`xcwd`"
+bindsym $mod+Shift+Return exec alacritty "--working-directory" "`xcwd`"
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -238,7 +239,7 @@ exec --no-startup-id xfce4-volumed
 # exec --no-startup-id xfce4-panel --disable-wm-check
 # Start the xfce4 panel network applet
 exec --no-startup-id nm-applet
-exec --no-startup-id feh --bg-center --image-bg black /home/leland/dotfiles/img/3k-mellowish-fractal2017-05-14_14_01_47.png
+exec --no-startup-id feh --bg-center --image-bg black /home/parallels/dotfiles/img/3k-mellowish-fractal2017-05-14_14_01_47.png
 #exec --no-startup-id /home/leland/.dropbox-dist/dropbox-lnx.x86_64-3.12.6/dropboxd
 exec --no-startup-id /home/leland/.dropbox-dist/dropboxd
 # Start the xfce4 power manager
