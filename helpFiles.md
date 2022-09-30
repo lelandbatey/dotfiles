@@ -1181,4 +1181,149 @@ with what we'll need, then add them to the index.rst
 
 Thankfully, I've written just such a script here: https://gist.github.com/lelandbatey/bea331e365ee60d1fe55195f048b5498
 
+# How do I get my browser to open VSCode links?
 
+Sources:
+
+* [https://unix.stackexchange.com/questions/497146/create-a-custom-url-protocol-handler](https://unix.stackexchange.com/questions/497146/create-a-custom-url-protocol-handler)
+* [https://github.com/microsoft/vscode/blob/fd08d32b40c8a9ff56777265bce3c385008c3cb1/resources/linux/code.desktop](https://github.com/microsoft/vscode/blob/fd08d32b40c8a9ff56777265bce3c385008c3cb1/resources/linux/code.desktop)
+* XDG Desktop entries specification: [https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html\#exec-variables](https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#exec-variables)
+
+## Problem: my browser won't go back to VSCode during authentication flow
+
+When using parts of VSCode that require external authentication, you'll
+commonly be redirected to pages where you'll authenticate, then the
+authentication flow will attempt to redirect you from the web-browser back into
+VSCode by telling the browser to attempt to open a URL of a specific type.
+Examples of these kinds of URLs are:
+
+    # The following actual valid HTTPS URL will attempt to serve a 302 redirect to
+    # the 'vscode' based URL:
+    #     https://vscode.dev/redirect?code=XXXXXXXXXX&state=vscode%253A%252F%252Fvscode.github-authentication%252Fdid-authenticate%253Fnonce%253D3f17c3db-398b-4a91-XXXX-748eb8cb1c1b%2526windowId%253D1
+    vscode://vscode.github-authentication/did-authenticate?nonce=3f17c3db-398b-4a91-XXXX-748eb8cb1c1b&windowId=1&code=XXXXXXXXXX&state=vscode%253A%252F%252Fvscode.github-authentication%252Fdid-authenticate%253Fnonce%253D3f17c3db-398b-4a91-XXXX-748eb8cb1c1b%2526windowId%253D1
+
+However, since I set up vs-code just by unzipping it and running it straight
+out of a folder, none of my web-browsers understand what to do with the
+`vscode://` based URIs and they'll say something like:
+
+    # Firefox
+    The address wasn’t understood
+    An error occurred during a connection to vscode.dev.
+    - You might need to install other software to open this address.
+
+    # Chromium
+    # First it shows a pop-up asking if it should try to open the URL with
+    # `xdg-open`. I click yes, but instead of launching 'xdg-open' exactly,
+    # Chromium seems to launch
+    # `/usr/libexec/xdg-desktop-portal-gtk`, which is not part of the xdg set of
+    # scripts and is instead a SystemD-based C program, so I can only hope that it
+    # works the same as the other XDG programs to resolve what handles each
+    # filetype. Anyway, it is a window that shows:
+    No Apps available
+    No apps installed that can open "...91-XXXX-748eb8cb1c1b%2526windowId%253D1". You can find more applications in Software
+
+## Why is this problem happening?
+
+All of this seems to be happening because the XDG suite of tools/standards is
+expecting me to have a "registered handler" for the `vscode://` scheme. Where
+do the XDG tools look to find what is and isn't registered? I can find that by
+running `xdg-open` with a debug flag so it prints what it searches:
+
+    $ XDG_UTILS_DEBUG_LEVEL=9999 xdg-open 'vscode://vscode.helloworld'
+    Selected DE generic
+    Checking /home/{HOMEDIR}/.config/mimeapps.list
+    Checking /home/{HOMEDIR}/.local/share/applications/defaults.list and /home/{HOMEDIR}/.local/share/applications/mimeinfo.cache
+    Checking /home/{HOMEDIR}/.local/share/applications/defaults.list and /home/{HOMEDIR}/.local/share/applications/mimeinfo.cache
+    Checking /usr/share/i3/applications/defaults.list and /usr/share/i3/applications/mimeinfo.cache
+    Checking /usr/share/i3/applications/defaults.list and /usr/share/i3/applications/mimeinfo.cache
+    Checking /usr/local/share//applications/defaults.list and /usr/local/share//applications/mimeinfo.cache
+    Checking /usr/local/share//applications/defaults.list and /usr/local/share//applications/mimeinfo.cache
+    Checking /usr/share//applications/defaults.list and /usr/share//applications/mimeinfo.cache
+    Checking /usr/share//applications/defaults.list and /usr/share//applications/mimeinfo.cache
+    Checking /var/lib/snapd/desktop/applications/defaults.list and /var/lib/snapd/desktop/applications/mimeinfo.cache
+    Checking /var/lib/snapd/desktop/applications/defaults.list and /var/lib/snapd/desktop/applications/mimeinfo.cache
+
+## How do I fix this so my browser will open `vscode://` links?
+
+It seems that I need to:
+
+1. Create a `.desktop` file in the `/home/{HOMEDIR}/.local/share/applications` directory (I found this info elsewhere, but basically they have to be in one of the `applications/` folders searched above)
+2. Add a line to `/home/{HOMEDIR}/.config/mimeapps.list` referring to that `.desktop` file by name (NOT BY PATH, just by its name) for the `x-scheme-handler/vscode` field
+
+## What do we put into the `.desktop` file?
+
+All the .desktop files are templated out here in the VSCode repo:
+
+* Historical: [https://github.com/microsoft/vscode/blob/fd08d32b40c8a9ff56777265bce3c385008c3cb1/resources/linux/code.desktop](https://github.com/microsoft/vscode/blob/fd08d32b40c8a9ff56777265bce3c385008c3cb1/resources/linux/code.desktop)
+* Current: [https://github.com/microsoft/vscode/blob/main/resources/linux/code.desktop](https://github.com/microsoft/vscode/blob/main/resources/linux/code.desktop)
+* Current URL handler: [https://github.com/microsoft/vscode/blob/main/resources/linux/code-url-handler.desktop](https://github.com/microsoft/vscode/blob/main/resources/linux/code-url-handler.desktop)
+
+Those are just template files, to know what goes in the template files we grep
+around and find it's specified in a Gulp build file which gets it's vars from a
+`product.json`. Annoyingly, the `product.json` file in the public VSCode repo
+on Github is not the same as the `product.json` that's actually shipped with
+the built and distributed version of VSCode, so we have to download that to
+find out. Doing so, we see:
+
+    NAME_LONG=Visual Studio Code
+    NAME=code
+    NAME_SHORT=Code
+    EXEC=/usr/share/code/code
+    ICON=com.visualstudio.code
+    URLPROTOCOL=vscode
+
+Note though that I'm changing `EXEC` to be `~/bin/vscode` since that's where I
+keep my exe; you'll need to set it correctly to point at the VSCode binary on
+your computer.
+
+The following is the contents of each of the `.desktop` files that VSCode will
+normally include AFTER template rendering. These are exactly how they look on
+disk on my computer.
+
+### `code.desktop`
+
+    [Desktop Entry]
+    Name=Visual Studio Code
+    Comment=Code Editing. Redefined.
+    GenericName=Text Editor
+    Exec=/home/leland/bin/vscode --unity-launch %F
+    Icon=com.visualstudio.code
+    Type=Application
+    StartupNotify=false
+    StartupWMClass=Code
+    Categories=TextEditor;Development;IDE;
+    MimeType=text/plain;inode/directory;application/x-code-workspace;
+    Actions=new-empty-window;
+    Keywords=vscode;
+
+    [Desktop Action new-empty-window]
+    Name=New Empty Window
+    Exec=/home/leland/bin/vscode --new-window %F
+    Icon=com.visualstudio.code
+
+### `code-url-handler.desktop`
+
+    [Desktop Entry]
+    Name=Visual Studio Code - URL Handler
+    Comment=Code Editing. Redefined.
+    GenericName=Text Editor
+    Exec=/home/leland/bin/vscode --open-url %U
+    Icon=com.visualstudio.code
+    Type=Application
+    NoDisplay=true
+    StartupNotify=true
+    Categories=Utility;TextEditor;Development;IDE;
+    MimeType=x-scheme-handler/vscode;
+    Keywords=vscode;
+
+## Install the files and register them as handlers
+
+Copy those desktop files into their special XDG folder at `~/.local/share/applications/` then run:
+
+    xdg-mime default code-url-handler.desktop x-scheme-handler/vscode
+
+## Done!
+
+Now when visiting those VS-code specific URLs in either Chromium or Firefox,
+we'll correctly be redirected back to Visual Studio Code to continue with e.g.
+the Live Share flow.
