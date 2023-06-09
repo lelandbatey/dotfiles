@@ -166,7 +166,12 @@ font:
     #style: Bold Italic
 
   # Point size
-  size: 13.0
+  #size: 13.0 # Normally I prefer size 13
+  # With my Inconsolata font, I changed the hinting to look better at small
+  # sizes (by turning on "autohint"), so I now use a smaller 11.5 size on my
+  # main display
+  size: 11.5
+  #size: 10.0 # When working on a 1080p monitor in the office, shrink to 9 since monitor is low DPI
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter
@@ -904,6 +909,8 @@ colors:
   #- { key: F,              mods: Command|Control,            action: ToggleFullscreen      }
   #- { key: F,              mods: Command, mode: ~Search,     action: SearchForward         }
   #- { key: B,              mods: Command, mode: ~Search,     action: SearchBackward        }
+key_bindings:
+  - { key: N,              mods: Control,                    action: SpawnNewInstance      }
 
 #debug:
   # Display the time it takes to redraw each frame.

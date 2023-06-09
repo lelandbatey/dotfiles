@@ -61,3 +61,5 @@ Thumbs.db
 # Ignore python virtual environment folders
 venv*
 .mypy_cache*
+
+*.bak

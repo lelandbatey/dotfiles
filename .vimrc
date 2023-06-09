@@ -1,6 +1,6 @@
 "let g:python_host_prog='/home/leland/bin/venv/bin/python'
-"let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
-let g:python3_host_prog='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
+let g:python3_host_prog='/home/parallels/bin/venv-3/bin/python'
+"let g:python3_host_prog='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -90,6 +90,9 @@ Plug 'iautom8things/gitlink-vim'
 " Fixes Python indenting of braces and brackets
 Plug 'Vimjas/vim-python-pep8-indent'
 
+" trying out this plugin for Pico8
+Plug 'bakudankun/pico-8.vim'
+
 call plug#end()
 
 " Some Linux distributions set filetype in /etc/vimrc.
@@ -142,6 +145,19 @@ let g:netrw_browse_split=4
 let g:netrw_hide=1
 let g:netrw_list_hide='.*\.pyc$'
 
+" Apparently netrw now overrides the ctrl-L shortcut, so revert it:
+"     https://github.com/christoomey/vim-tmux-navigator/issues/189#issuecomment-362079200
+"augroup netrw_mapping
+"  autocmd!
+"  autocmd filetype netrw call NetrwMapping()
+"augroup END
+"
+"function! NetrwMapping()
+"  nnoremap <silent> <buffer> <c-l> :wincmd l<CR>
+"endfunction
+" Freed <C-l> in Netrw
+nmap <leader><leader><leader><leader><leader><leader>l <Plug>NetrwRefresh
+
 " Make YouCompleteMe close it's preview window once you leave insert mode
 "let g:ycm_autoclose_preview_window_after_insertion = 1
 " Ensure YouCompleteMe uses whichever version of python I'm using
@@ -188,6 +204,15 @@ set number
 set relativenumber
 set numberwidth=4
 
+" We want commands like gqq to wrap text at line 100 instead of line 80, but
+" we also don't want our comments to be auto-wrapped while we're typing. We
+" want to have to manually wrap everything; code, comments, text, etc.
+"
+" Don't wrap text using textwidth, don't wrap comments using textwidth
+set fo-=t fo-=c
+" Make the textwidth 100 so that gqq will wrap at column 100
+set textwidth=100
+
 " Always show the statusline
 set laststatus=2
 " Our actual status line:
@@ -205,11 +230,11 @@ set ignorecase
 set smartcase
 
 " Set total number of available colors (forcefully) to 256
-set t_Co=256
+"set t_Co=256
 " Set the background color
 "set t_AB=[48;5;%dm
 " Set the foreground color
-set t_AF=[38;5;%dm
+"set t_AF=[38;5;%dm
 
 " Lets the backspace key delete things it otherwise can't
 set backspace=indent,eol,start
@@ -225,7 +250,7 @@ noremap <silent> <leader>/ :let @/ = ""<CR>
 " Change search highlight color
 "highlight Search ctermbg=yellow ctermfg=black
 
-" Create a "crosshair" on the current position
+" Create a 'crosshair' on the current position
 " set cursorline
 " set cursorcolumn
 
@@ -249,9 +274,13 @@ nnoremap <silent> <leader><leader>k :exe "resize" . (winheight(0) * 2/3)<CR>
 " Create map to edit vimrc
 map <leader>v :sp ~/.vimrc<enter>G
 
+" Change how Rg is called by fzf.vim so that it'll follow symlinks (via
+" '--follow' argument)
+command! -bang -nargs=* Rg  call fzf#vim#grep("rg --column --follow --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+
 " Allow for quickly searching for an identifier across a codebase
-nnoremap <silent> <leader>fc yiw:Ag <C-r>"<CR>
-vnoremap <silent> <leader>fc y:Ag <C-r>"<CR>
+nnoremap <silent> <leader>fc yiw:Rg <C-r>"<CR>
+vnoremap <silent> <leader>fc y:Rg <C-r>"<CR>
 
 nnoremap <leader>ff :FZF<CR>
 
@@ -273,13 +302,13 @@ let g:netrw_winsize = -25
 map <leader>ff :FZF<enter>
 
 " Quickly search for the contents of a file in my directory with Ag/Rg
-map <leader>fc :Ag <C-R><C-W><CR>
+map <leader>fc :Rg <C-R><C-W><CR>
 
 " Quick opening tabs
 map <leader>t :e<space>
 
 " Open a sibling file
-nnoremap <leader>sf :e <C-R>=expand('%:p:h')<CR>
+nnoremap <leader>sf :e <C-R>=expand('%:p:h') . "/"<CR>
 
 " Toggleing viewing whitespace
 nmap <leader>W :set list!<enter>
@@ -368,6 +397,11 @@ nmap <leader><leader>c :set number! relativenumber!<enter>
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 " Fix filetype associations for Gotemplate files.
 autocmd BufNewFile,BufReadPost *.gotemplate set filetype=go
+" Fix filetype associations for JSONNET files, and turn off autoformatting
+" since jsonnet doesn't have actually the same syntax as JSON, but it works
+" for highlighting purposes.
+autocmd BufNewFile,BufReadPost *.jsonnet set filetype=javascript | let g:should_autoformat=0
+autocmd BufNewFile,BufReadPost *.libsonnet set filetype=javascript | let g:should_autoformat=0
 
 
 map <leader>cd <plug>NERDCommenterToggle
@@ -378,6 +412,8 @@ map <leader>cd <plug>NERDCommenterToggle
 " Show info about current syntax highlighting unit below cursor
 map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
 
+" Set path to Pico8 binary for the Pico8 vim plugin
+let g:pico8_config = {'pico8_path': "/home/parallels/projects/pico8/0.2.5_pico8_bin/pico8"}
 
 " Set the auto-export variable of vimwiki, so all wiki entries are rendered to
 " html on write. This big bunch of configuration is derived from
@@ -394,7 +430,8 @@ map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<
 "	'path_html': '/home/leland/vimwiki_html/', 'temp': 0,\
 "	'template_path': '/home/leland/vimwiki/templates/',\
 "	'list_margin': -1, 'diary_rel_path': 'diary/'}]
-let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
+"let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
+let g:vimwiki_list = [{'path': '/home/parallels/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
 let g:vimwiki_url_maxsave=0
 
 " Vimwiki supports markdown, and Vimwiki tries to apply its own syntax
@@ -409,9 +446,13 @@ let g:vimwiki_url_maxsave=0
 " registered vimwiki directory, such as '/home/leland/vimwiki/'
 let g:vimwiki_global_ext = 0
 
+" Useful for pasting in my pre-generated daily text for diarys in vimwiki
+map <leader>vd :.!~/dotfiles/scripts/insert_vdate.sh %:p<enter>
+
+
 " use the python formatter called 'black' over 'yapf'
-"let g:formatters_python = ['black', 'yapf', 'autopep8']
-let g:formatters_python = ['yapf']
+let g:formatters_python = ['black', 'yapf', 'autopep8']
+"let g:formatters_python = ['yapf']
 
 " Fix Vim combining stdin and stdout when running another command, usually a
 " problem when running black
@@ -485,26 +526,55 @@ let g:go_fmt_command = 'gofmt'
 let g:go_imports_autosave = 0
 
 nnoremap <c-]> :call LanguageClient#textDocument_definition()<CR>
+nnoremap <leader>cr :call LanguageClient#textDocument_references()<CR>
+nnoremap <leader>gd :call LanguageClient#textDocument_typeDefinition()<CR>
 
+" Without this, ruby projects nested in git repos won't work with SolarGraph
+" properly since LanguageClient falls back to assuming the .git root is
+" workspace dir, while solargraph expects it to be the dir with the
+" .solargraph.yml
 " 'go': ['.git', 'go.mod'],
 let g:LanguageClient_rootMarkers = {
       \ 'go': ['.git', 'go.mod'],
+      \ 'ruby': ['.solargraph.yml'],
+      \ 'typescriptreact': ['tsconfig.json'],
+      \ 'javascriptreact': ['tsconfig.json'],
+      \ 'typescript': ['tsconfig.json'],
+      \ 'javascript': ['tsconfig.json'],
+      \ 'javascript.tsx': ['tsconfig.json'],
+      \ 'javascript.ts': ['tsconfig.json'],
+      \ 'javascript.jsx': ['tsconfig.json'],
+      \ 'javascript.js': ['tsconfig.json'],
       \ }
 
 "    \ 'go': ['bingo', '-format-style', 'gofmt', '-disable-func-snippet', '-enhance-signature-help'],
 "    \ 'go': ['tcp://127.0.0.1:4389'],
 "     \ 'go': ['gopls'],
 let g:LanguageClient_serverCommands = {
-     \ 'go': ['gopls'],
-      \ 'python': ['pylsp'],
-      \ }
+    \ 'javascript': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
+    \ 'typescriptreact': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
+    \ 'javascriptreact': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
+    \ 'typescript': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
+    \ 'go': {
+    \     'name': 'gopls',
+    \     'command': ['gopls'],
+    \     'initializationOptions': {
+    \         'usePlaceholders': v:true,
+    \         'buildFlags': ['-tags=or_e2e or_int or_test'],
+    \     },
+    \ },
+    \ 'python': ['pylsp'],
+    \ 'ruby': [ 'solargraph',  'stdio' ],
+    \ }
+
 " Set up logging of language client
 let g:LanguageClient_loggingFile = expand('~/.vim/LanguageClient.log')
 let g:LanguageClient_loggingLevel = "WARN"
 
 " We have to point jedi at our virtualenv python
 "let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
-let g:ncm2_jedi#environment='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
+"let g:ncm2_jedi#environment='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
+let g:ncm2_jedi#environment='/home/parallels/bin/venv-3/bin/python'
 " If we're working on a Python2 environment, we have to point our autocomplete
 " at our Python2 venv
 

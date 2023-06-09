@@ -120,8 +120,17 @@ alias grpax="ps aux | grep" # Shortcut for searching for running processes
 alias lesn="less -N" # Less now shows line numbers on the left hand side.
 alias gca="git commit -am" # Makes commits faster!
 
-# Automatically "pull" all github repos in the current users home directory
-alias gpa="find . -name .git -type d | sed 's,/*[^/]\+/*$,,' | xargs -L1 bash -c 'cd \$1 && git pull; echo -ne \ : \$1 \\\n' _"
+# Automatically "pull" all github repos in the current users home directory;
+# note the odd 'sed' is for removing the final directory in the path
+alias gpa="find . -name .git -type d | sed 's|/*[^/]\+/*$||' | xargs -L1 bash -c 'cd \$1 && git pull; echo -ne \ : \$1 \\\n' _"
+
+# The below giant pipeline goes great with the 'ghorg --no-clean' command since
+# it lets you bring them up to the latest if they're checked out on
+# main/master, while the ones that aren't (such as those on a local dev branch
+# with changes you don't want damaged) won't be affected. Overally, it's a
+# gentler way (compared to a vanilla ghorg) to bring your many git repos up to
+# match the remote.
+#     find . -name .git -type d | sed 's|/*[^/]\+/*$||' | sed '/\/\.[^\/]\+\/*$/d' | sort | while read x; do realpath "${x}"; done | while read repopath; do cd "${repopath}"; UPSTRM="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null)"; if [ "$?" -eq 0 ]; then git merge "${UPSTRM}"; else echo "SKIPPING ${repopath}"; fi; done
 
 alias gshow="git show --color --pretty=format:%b" # Pretty-printing of a commit in git
 
@@ -171,12 +180,24 @@ function mp(){
 # A nice way to list all the possible executable packages within the current
 # directory structure. Useful for listing go executables in a project.
 function list-gomains(){
-    mainfiles=$(ag --files-with-matches --go "package main")
+    mainfiles=$(rg --files-with-matches "package main" --iglob="*.go")
 
     for fn in $mainfiles; do
         mainpkg=${fn%/*.go}
         name=${mainpkg##*/}
         echo "$name"
+    done
+}
+
+function gpm() {
+    BRANCHES=("master" "main")
+	# for idx in "${!BRANCHES[@]}"; do # iterate across index numbers
+	for BRANCH in "${BRANCHES[@]}"; do
+        #printf "%s\n" "BRANCH = '${BRANCH}'"
+        git rev-parse --verify "${BRANCH}" &> /dev/null
+		if [ $? != 0 ]; then continue; fi
+        echo git fetch origin "${BRANCH}":"${BRANCH}"
+        git fetch origin "${BRANCH}":"${BRANCH}"
     done
 }
 
@@ -245,6 +266,7 @@ fi
 # Does rust specific setup
 if [ -d "$HOME/.cargo/bin/" ]; then
     export PATH="$PATH:$HOME/.cargo/bin/"
+    . "$HOME/.cargo/env"
 fi
 
 
@@ -282,7 +304,7 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_COMMAND='ag -l --nocolor --hidden -g ""'
+export FZF_DEFAULT_COMMAND='rg --follow -l --nocolor --hidden --files ""'
 
 [ -f ~/.config/broot/launcher/bash/br ] && source /home/leland/.config/broot/launcher/bash/br
 

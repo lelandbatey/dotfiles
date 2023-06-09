@@ -54,7 +54,7 @@ set $left h
 set $right l
 
 # Start a web browser
-bindsym $mod+backslash exec qutebrowser
+bindsym $mod+backslash exec chromium
 bindsym $mod+Shift+backslash exec firefox
 
 # Use Mouse+$mod to drag floating windows to their wanted position
@@ -234,17 +234,17 @@ bar {
 }
 
 # Start the xfce4 volumed daemon which will handle the volume up/down/mute
-exec --no-startup-id xfce4-volumed
+#exec --no-startup-id xfce4-volumed
 # Start the xfce4 panel
 # exec --no-startup-id xfce4-panel --disable-wm-check
 # Start the xfce4 panel network applet
 exec --no-startup-id nm-applet
 exec --no-startup-id feh --bg-center --image-bg black /home/parallels/dotfiles/img/3k-mellowish-fractal2017-05-14_14_01_47.png
 #exec --no-startup-id /home/leland/.dropbox-dist/dropbox-lnx.x86_64-3.12.6/dropboxd
-exec --no-startup-id /home/leland/.dropbox-dist/dropboxd
+#exec --no-startup-id /home/leland/.dropbox-dist/dropboxd
 # Start the xfce4 power manager
-exec --no-startup-id xfce4-power-manager
+#exec --no-startup-id xfce4-power-manager
 exec --no-startup-id parcellite
 
-exec --no-startup-id xautolock -detectsleep \
-  -time 10 -locker "/home/leland/bin/locker" &
+#exec --no-startup-id xautolock -detectsleep \
+#  -time 10 -locker "/home/leland/bin/locker" &
