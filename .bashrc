@@ -304,7 +304,7 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export FZF_DEFAULT_COMMAND='rg --follow -l --nocolor --hidden --files ""'
+export FZF_DEFAULT_COMMAND='rg --follow -l --hidden --files '
 
 [ -f ~/.config/broot/launcher/bash/br ] && source /home/leland/.config/broot/launcher/bash/br
 
