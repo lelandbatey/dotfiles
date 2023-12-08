@@ -93,6 +93,9 @@ Plug 'Vimjas/vim-python-pep8-indent'
 " trying out this plugin for Pico8
 Plug 'bakudankun/pico-8.vim'
 
+" allow me to use 'let' statements in modeline
+Plug 'vim-scripts/let-modeline.vim'
+
 call plug#end()
 
 " Some Linux distributions set filetype in /etc/vimrc.
@@ -547,14 +550,15 @@ let g:LanguageClient_rootMarkers = {
       \ 'javascript.js': ['tsconfig.json'],
       \ }
 
-"    \ 'go': ['bingo', '-format-style', 'gofmt', '-disable-func-snippet', '-enhance-signature-help'],
-"    \ 'go': ['tcp://127.0.0.1:4389'],
-"     \ 'go': ['gopls'],
+"    \ 'javascript': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'typescriptreact': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'javascriptreact': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'typescript': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
 let g:LanguageClient_serverCommands = {
-    \ 'javascript': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
-    \ 'typescriptreact': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
-    \ 'javascriptreact': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
-    \ 'typescript': ['/home/parallels/.asdf/installs/nodejs/16.8.0/bin/typescript-language-server', '--stdio'],
+    \ 'javascript': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'typescriptreact': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'javascriptreact': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'typescript': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
     \ 'go': {
     \     'name': 'gopls',
     \     'command': ['gopls'],

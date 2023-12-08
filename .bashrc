@@ -69,6 +69,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 xset r rate 200 80
+git config --global user.email 'lelandbatey@lelandbatey.com'
 
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
@@ -190,16 +191,62 @@ function list-gomains(){
 }
 
 function gpm() {
-    BRANCHES=("master" "main")
-	# for idx in "${!BRANCHES[@]}"; do # iterate across index numbers
-	for BRANCH in "${BRANCHES[@]}"; do
+    BRANCHES=("master" "main");
+    # for idx in "${!BRANCHES[@]}"; do # iterate across index numbers
+    for BRANCH in "${BRANCHES[@]}"; do
         #printf "%s\n" "BRANCH = '${BRANCH}'"
         git rev-parse --verify "${BRANCH}" &> /dev/null
-		if [ $? != 0 ]; then continue; fi
+        if [ $? != 0 ]; then continue; fi
         echo git fetch origin "${BRANCH}":"${BRANCH}"
         git fetch origin "${BRANCH}":"${BRANCH}"
     done
 }
+
+# Turn on the extdebug mode so that our `scold_git_checkout` can prevent us from running
+# git-checkout by exiting 1; forcing us to re-learn our muscle memory
+shopt -s extdebug
+
+scold_git_checkout() {
+	if [ "$1" != "git" ]; then
+		return 0
+	fi
+	if [ "$2" != "checkout" ]; then
+		return 0
+	fi
+	cat >&2 <<EOF
+////// DON'T use git checkout! //////
+The 'git checkout' command of git has been replaced with two other
+commands: 'git switch' and 'git restore'. You used:
+	$@
+EOF
+	if [ "$3" == "-b" ]; then
+		PASTESAFE="$(printf "%q " "${@:4}")"
+		cat >&2 <<EOF
+You should use the following:
+
+	git switch -c $PASTESAFE
+
+EOF
+	elif [ "$3" == "--" ]; then
+		PASTESAFE="$(printf "%q " "${@:4}")"
+		cat >&2 <<EOF
+You should use the following:
+
+	git restore $PASTESAFE
+
+EOF
+	else
+		PASTESAFE="$(printf "%q " "${@:3}")"
+		cat >&2 <<EOF
+You can try the following:
+
+	git switch $PASTESAFE
+
+EOF
+	fi
+	return 1
+}
+trap 'scold_git_checkout $BASH_COMMAND' DEBUG
 
 
 # Unlimited bash history size
