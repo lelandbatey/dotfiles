@@ -135,6 +135,7 @@ alias gpa="find . -name .git -type d | sed 's|/*[^/]\+/*$||' | xargs -L1 bash -c
 
 alias gshow="git show --color --pretty=format:%b" # Pretty-printing of a commit in git
 
+alias nenv="source ~/dotfiles/scripts/nenv"
 alias vnv="source ~/bin/venv-3/bin/activate"
 alias vnv2="source ~/bin/venv/bin/activate"
 alias xopen="xdg-open"
