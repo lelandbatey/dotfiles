@@ -1,5 +1,5 @@
 "let g:python_host_prog='/home/leland/bin/venv/bin/python'
-let g:python3_host_prog='/home/parallels/bin/venv-3/bin/python'
+let g:python3_host_prog='/home/leland/bin/venv-3/bin/python'
 "let g:python3_host_prog='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
 
 set nocompatible              " be iMproved, required
@@ -96,6 +96,15 @@ Plug 'bakudankun/pico-8.vim'
 " allow me to use 'let' statements in modeline
 Plug 'vim-scripts/let-modeline.vim'
 
+" Support for GraphQL syntax highlighting
+Plug 'jparise/vim-graphql'
+
+" Allows moving arguments and other comma-separated things around:
+Plug 'PeterRincker/vim-argumentative'
+
+" Plugins can register so they work with '.' to repeat; argumentative uses
+Plug 'tpope/vim-repeat'
+
 call plug#end()
 
 " Some Linux distributions set filetype in /etc/vimrc.
@@ -122,8 +131,8 @@ let g:airline#extensions#tabline#tab_nr_type = 2
 " Show both buffers and tabs
 " enable/disable displaying buffers with a single tab
 let g:airline#extensions#tabline#show_buffers = 1
-" Displays a superscript buffer index in the tabline
-let g:airline#extensions#tabline#buffer_idx_mode = 1
+" Displays a superscript buffer index in the tabline, up to 99
+let g:airline#extensions#tabline#buffer_idx_mode = 2
 " Mappings for moving between buffers using vim-airline
 nmap <leader>1 <Plug>AirlineSelectTab1
 nmap <leader>2 <Plug>AirlineSelectTab2
@@ -134,6 +143,46 @@ nmap <leader>6 <Plug>AirlineSelectTab6
 nmap <leader>7 <Plug>AirlineSelectTab7
 nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
+nmap <leader>0 <Plug>AirlineSelectTab10
+nmap <leader>11 <Plug>AirlineSelectTab11
+nmap <leader>12 <Plug>AirlineSelectTab12
+nmap <leader>13 <Plug>AirlineSelectTab13
+nmap <leader>14 <Plug>AirlineSelectTab14
+nmap <leader>15 <Plug>AirlineSelectTab15
+nmap <leader>16 <Plug>AirlineSelectTab16
+nmap <leader>17 <Plug>AirlineSelectTab17
+nmap <leader>18 <Plug>AirlineSelectTab18
+nmap <leader>19 <Plug>AirlineSelectTab19
+nmap <leader>20 <Plug>AirlineSelectTab20
+nmap <leader>21 <Plug>AirlineSelectTab21
+nmap <leader>22 <Plug>AirlineSelectTab22
+nmap <leader>23 <Plug>AirlineSelectTab23
+nmap <leader>24 <Plug>AirlineSelectTab24
+nmap <leader>25 <Plug>AirlineSelectTab25
+nmap <leader>26 <Plug>AirlineSelectTab26
+nmap <leader>27 <Plug>AirlineSelectTab27
+nmap <leader>28 <Plug>AirlineSelectTab28
+nmap <leader>29 <Plug>AirlineSelectTab29
+nmap <leader>30 <Plug>AirlineSelectTab30
+nmap <leader>31 <Plug>AirlineSelectTab31
+nmap <leader>32 <Plug>AirlineSelectTab32
+nmap <leader>33 <Plug>AirlineSelectTab33
+nmap <leader>34 <Plug>AirlineSelectTab34
+nmap <leader>35 <Plug>AirlineSelectTab35
+nmap <leader>36 <Plug>AirlineSelectTab36
+nmap <leader>37 <Plug>AirlineSelectTab37
+nmap <leader>38 <Plug>AirlineSelectTab38
+nmap <leader>39 <Plug>AirlineSelectTab39
+nmap <leader>40 <Plug>AirlineSelectTab40
+nmap <leader>41 <Plug>AirlineSelectTab41
+nmap <leader>42 <Plug>AirlineSelectTab42
+nmap <leader>43 <Plug>AirlineSelectTab43
+nmap <leader>44 <Plug>AirlineSelectTab44
+nmap <leader>45 <Plug>AirlineSelectTab45
+nmap <leader>46 <Plug>AirlineSelectTab46
+nmap <leader>47 <Plug>AirlineSelectTab47
+nmap <leader>48 <Plug>AirlineSelectTab48
+nmap <leader>49 <Plug>AirlineSelectTab49
 nmap <leader>- <Plug>AirlineSelectPrevTab
 nmap <leader>+ <Plug>AirlineSelectNextTab
 
@@ -245,6 +294,30 @@ set backspace=indent,eol,start
 " Set the colorscheme
 colorscheme monokai
 
+" set alternate color of the filenames in the tabline; we want better contrast for files which are
+" open in other panes, but which are not the currently in-focus panes.
+" Skeleton here: https://github.com/vim-airline/vim-airline/issues/553#issuecomment-284666059
+" I chose my own colors though; they go in order [guifg, guibg, ctermfg, ctermbg, opts]
+" cterm colors come from here: https://www.ditig.com/publications/256-colors-cheat-sheet
+" Original value:
+"       'airline_tab':       ['#4e4e4e','#303030',239,236,''],
+" Technically, pallet.tabline.'airline_tab' is a name for an override; if I want to change it in
+" other places that don't use the override and instead use the "raw value", I need to do the "patch"
+" procedure described here:
+"     https://github.com/vim-airline/vim-airline/blob/ff7352e4bff02eb600a136b6fd741404f3195371/doc/airline.txt#L170-L179
+" We also do this, because we want the better contrast in the bufferline as well, and that doesn't
+" use an override...
+autocmd VimEnter *
+   \ let g:airline#themes#dark#palette.tabline = {
+   \    'airline_tab':       ['#eeeeee','#303030',255,236,''],
+   \ } | :AirlineRefresh
+let g:airline_theme_patch_func = 'AirlineThemePatch'
+function! AirlineThemePatch(palette)
+  if g:airline_theme == 'dark'
+    let a:palette.inactive['airline_c'][0] = '#eeeeee'
+    let a:palette.inactive['airline_c'][2] = 255
+  endif
+endfunction
 " Allow for deleting the current buffer withough closing the open pane:
 " See here: https://stackoverflow.com/a/29179159
 noremap <leader>d :bp\|bd #<enter>
@@ -279,12 +352,32 @@ map <leader>v :sp ~/.vimrc<enter>G
 
 " Change how Rg is called by fzf.vim so that it'll follow symlinks (via
 " '--follow' argument)
-command! -bang -nargs=* Rg  call fzf#vim#grep("rg --column --follow --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>), 1, fzf#vim#with_preview(), <bang>0)
+" Also, tells Rg to search in multiple directories; the directories we specify are:
+" 1. The current working directory of vim
+" 2. The directory resulting from calling get_root.py (in the scripts/ folder of these dotfiles) with
+"    the current working directory of vim; usually this will be the first ancestor dir with a .git/
+"    folder in it (which might be this current working directory).
+" 3. The directory result from calling get_root.py with the path to the file currently being looked
+"    at. If you're looking at a folder that's within the same tree as the current working directory,
+"    this'll probably be the same dir as #2. But if you're looking at a file not a descendent of the
+"    dir in #2, such as when reading the code of an external dependency, this will be the root for
+"    _that_ file, which allows you to Rg within the project your working in _and_ in the dependency
+"    you're looking at.
+ command! -bang -nargs=* Rg  call fzf#vim#grep("rg --column --follow --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>)." ".getcwd()." ".system('get_root.py '.expand('%:p'))." ".system('get_root.py '.getcwd()), 1, fzf#vim#with_preview(), <bang>0)
+"
+" Register a new command which is like Rg but will also search hidden files
+command! -bang -nargs=* HRg  call fzf#vim#grep("rg --column --follow --hidden --no-ignore --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>)." ".getcwd()." ".system('get_root.py '.expand('%:p'))." ".system('get_root.py '.getcwd()), 1, fzf#vim#with_preview(), <bang>0)
 
 " Allow for quickly searching for an identifier across a codebase
 nnoremap <silent> <leader>fc yiw:Rg <C-r>"<CR>
 vnoremap <silent> <leader>fc y:Rg <C-r>"<CR>
 
+" searching for an identifier, but also searches hidden files
+nnoremap <silent> <leader>hfc yiw:HRg <C-r>"<CR>
+vnoremap <silent> <leader>hfc y:HRg <C-r>"<CR>
+
+" FZF seems defined via FZF official not fzf.vim, so probably can't call it with hidden; oh well.
+" Maybe in the future I can have a hidden ff that uses #fzf#vim#files() or something?
 nnoremap <leader>ff :FZF<CR>
 
 " Function to source `vimrc` again. Originally from here:
@@ -321,6 +414,10 @@ nmap <leader>l :set spell! spelllang=en_us<CR>
 
 " Search for the current visual selection with '//'
 vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
+
+" Make the * key NOT jump to the next selection, just highlight
+" https://stackoverflow.com/a/49944815
+nnoremap <silent> * :let @/= '\<' . expand('<cword>') . '\>' <bar> set hls <cr>
 
 " Moving between buffers in normal mode
 if !exists("*ConditionalChangeBufNext")
@@ -416,7 +513,7 @@ map <leader>cd <plug>NERDCommenterToggle
 map <F3> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">" . " FG:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")<CR>
 
 " Set path to Pico8 binary for the Pico8 vim plugin
-let g:pico8_config = {'pico8_path': "/home/parallels/projects/pico8/0.2.5_pico8_bin/pico8"}
+let g:pico8_config = {'pico8_path': "/home/leland/projects/pico8/0.2.5_pico8_bin/pico8"}
 
 " Set the auto-export variable of vimwiki, so all wiki entries are rendered to
 " html on write. This big bunch of configuration is derived from
@@ -433,8 +530,7 @@ let g:pico8_config = {'pico8_path': "/home/parallels/projects/pico8/0.2.5_pico8_
 "	'path_html': '/home/leland/vimwiki_html/', 'temp': 0,\
 "	'template_path': '/home/leland/vimwiki/templates/',\
 "	'list_margin': -1, 'diary_rel_path': 'diary/'}]
-"let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
-let g:vimwiki_list = [{'path': '/home/parallels/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
+let g:vimwiki_list = [{'path': '/home/leland/vimwiki/', 'auto_export': 1, 'auto_toc': 1}]
 let g:vimwiki_url_maxsave=0
 
 " Vimwiki supports markdown, and Vimwiki tries to apply its own syntax
@@ -489,7 +585,7 @@ let g:formatdef_yapf = "'yapf --style=\"{based_on_style: pep8, indent_width: 4, 
 
 " Create a command to link to a file in Gitlab/Github
 if !exists("*GitLink")
-  command GitLink :echo gitlink#GitLink()
+  command GitLink :redir @+ | echo gitlink#GitLink() | redir END | let @+ = substitute(@+, '\n', '', '')
 endif
 
 " Stuff for autocompletion
@@ -538,7 +634,7 @@ nnoremap <leader>gd :call LanguageClient#textDocument_typeDefinition()<CR>
 " .solargraph.yml
 " 'go': ['.git', 'go.mod'],
 let g:LanguageClient_rootMarkers = {
-      \ 'go': ['.git', 'go.mod'],
+      \ 'go': ['go.mod', '.git'],
       \ 'ruby': ['.solargraph.yml'],
       \ 'typescriptreact': ['tsconfig.json'],
       \ 'javascriptreact': ['tsconfig.json'],
@@ -550,15 +646,15 @@ let g:LanguageClient_rootMarkers = {
       \ 'javascript.js': ['tsconfig.json'],
       \ }
 
-"    \ 'javascript': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
-"    \ 'typescriptreact': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
-"    \ 'javascriptreact': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
-"    \ 'typescript': ['/home/parallels/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'javascript': ['/home/leland/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'typescriptreact': ['/home/leland/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'javascriptreact': ['/home/leland/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
+"    \ 'typescript': ['/home/leland/.asdf/installs/nodejs/16.20.0/bin/typescript-language-server', '--stdio'],
 let g:LanguageClient_serverCommands = {
-    \ 'javascript': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
-    \ 'typescriptreact': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
-    \ 'javascriptreact': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
-    \ 'typescript': ['/home/parallels/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'javascript': ['/home/leland/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'typescriptreact': ['/home/leland/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'javascriptreact': ['/home/leland/.asdf/shims/typescript-language-server', '--stdio'],
+    \ 'typescript': ['/home/leland/.asdf/shims/typescript-language-server', '--stdio'],
     \ 'go': {
     \     'name': 'gopls',
     \     'command': ['gopls'],
@@ -569,6 +665,7 @@ let g:LanguageClient_serverCommands = {
     \ },
     \ 'python': ['pylsp'],
     \ 'ruby': [ 'solargraph',  'stdio' ],
+    \ 'rust': ['rust-analyzer'],
     \ }
 
 " Set up logging of language client
@@ -578,7 +675,7 @@ let g:LanguageClient_loggingLevel = "WARN"
 " We have to point jedi at our virtualenv python
 "let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
 "let g:ncm2_jedi#environment='/home/leland/projects/glympse_ghorg/glympse/solutions/reporting-standardization/venv-3/bin/python'
-let g:ncm2_jedi#environment='/home/parallels/bin/venv-3/bin/python'
+let g:ncm2_jedi#environment='/home/leland/bin/venv-3/bin/python'
 " If we're working on a Python2 environment, we have to point our autocomplete
 " at our Python2 venv
 
