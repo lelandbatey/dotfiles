@@ -50,46 +50,23 @@ def main():
     inpaths = sys.argv[1:]
     outpaths = [find_root_path(inpth) for inpth in inpaths]
     outpaths = sorted(set(outpaths))
-    print(" ".join(outpaths))
-    return
-    inpth = path.abspath(inpth)
 
-    try:
-        statres = os.stat(inpth)
-    except OSError:
-        statres = None
-    if not statres:
-        print(f"# Provided file doesn't exist {inpth}", file=sys.stderr)
-        print(inpth, end="")
-        sys.exit(2)
-    if not stat.S_ISDIR(statres.st_mode):
-        statres = path.dirname(inpth)
+    # Do a little dedup of the outpaths. Check if any paths are direct subsets of other paths. We
+    # assume all paths in outpaths are normalized and absolute. Then we can check if short paths are
+    # contained within each longer path.
+    longFirst = sorted(outpaths, key=lambda x: -len(x))
+    uniqueChildren = set()
+    for idx, pth in enumerate(longFirst):
+        remaining = longFirst[idx+1:]
+        hasparent = False
+        for maybeParent in remaining:
+            if pth.startswith(maybeParent):
+                hasparent = True
+                break
+        if not hasparent:
+            uniqueChildren.add(pth)
 
-    currentPath = inpth
-
-    while currentPath != "/":
-        head, tail = path.split(currentPath)
-        if "@" in tail:
-            print(currentPath, end="")
-            return
-        gitpath = path.join(currentPath, ".git")
-        try:
-            statres = os.stat(gitpath)
-        except OSError:
-            statres = None
-        if statres:
-            print(currentPath, end="")
-
-            return
-        currentPath = head
-    print(inpth)
-    return
-
-    # iterate backwards from final index to form longest path not yet checked.
-    # for idx in range(len(pieces), 0, -1):
-    # ancestorPath = path.join(*pieces[:idx])
-    # path.dirname
-    # gitpath = path.join(ancestorPath, ".git")
+    print(" ".join(x for x in outpaths if x in uniqueChildren))
 
 
 if __name__ == "__main__":
