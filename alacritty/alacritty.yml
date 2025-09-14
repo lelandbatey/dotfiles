@@ -126,7 +126,7 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: monospace
+    #family: monospace
     family: Inconsolata
 
     # The `style` can be specified to pick a specific face.

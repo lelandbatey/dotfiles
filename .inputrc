@@ -16,3 +16,11 @@ set mark-symlinked-directories on
 "\C-x\C-r": re-read-init-file
 
 set bell-style none
+
+# allows for duplicating the word before the current cursor position on the
+# current line by pressing <ctrl>+j
+# from here: https://unix.stackexchange.com/a/356700
+"\ee":shell-backward-word
+"\ei":shell-forward-word
+"\ew":copy-region-as-kill
+"\ej":"\ee\e \ei\ew \C-y"

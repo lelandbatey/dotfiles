@@ -47,6 +47,20 @@ fi
 # ensures the history will be appended-to, stopping loss of history.
 shopt -s histappend
 
+# Turn on "direxpand" which will expand directories when tab completing, which
+# is annoying but is better than having $HOME expanded to \$HOME
+#
+# Without this option we see the following behavior:
+#
+#     Typing:   ln -s $HOME/bin<TAB>
+#     Becomes:  ln -s \$HOME/bin/
+#
+# With this option set, this is the new behavior
+#
+#     Typing:   ln -s $HOME/bin<TAB>
+#     Becomes:  ln -s /home/leland/bin/
+shopt -s direxpand
+
 # Sets the term variable to be 256colors if the terminal would otherwise just
 # call itself xterm. Done since MinTTY defaults to a TERM of 'xterm', which
 # causes screen not to work with 256 colors.
@@ -68,8 +82,47 @@ if [ -f /etc/bash_completion ]; then
  . /etc/bash_completion
 fi
 
+if [ -f /home/leland/bin/git-extras/etc/bash-completion/completions/git-extras ]; then
+ . /home/leland/bin/git-extras/etc/bash-completion/completions/git-extras
+fi
+
 xset r rate 200 80
 git config --global user.email 'lelandbatey@lelandbatey.com'
+git config --global user.name 'Leland Batey'
+
+# back up our .bash_history file (once per day) to a folder named $HOME/dotfiles/bash_history_backup
+backup_bash_history() {
+    BACKUP_DIR="$HOME/dotfiles/bash_history_backup"
+    BACKUP_FILE="$BACKUP_DIR/$(date "+%Y-%m-%d")_bash_history.gz"
+    HIST_FILE="$HOME/.bash_history"
+    NOTIFIED_FILE="/tmp/bashrc_backup_notified"
+
+    if [ ! -f "$HIST_FILE" ]; then
+        echo "# Error: $HIST_FILE does not exist"
+        return 1
+    fi
+
+    if [ -f "$BACKUP_FILE" ]; then
+        if [ ! -f "$NOTIFIED_FILE" ]; then
+            echo "# Backup \"~${BACKUP_FILE#$HOME}\" already exists, skipping"
+            touch "${NOTIFIED_FILE}"
+        fi
+        return 0
+    fi
+
+    mkdir -p "$BACKUP_DIR"
+
+    gzip -c "$HIST_FILE" > "$BACKUP_FILE"
+
+    if [ $? -eq 0 ]; then
+        echo "# Successfully backed up $HIST_FILE to $BACKUP_FILE"
+    else
+        echo "# Error: Failed to create backup"
+        return 1
+    fi
+    return 0
+}
+backup_bash_history
 
 # Source bashmarks
 if [ -f "$HOME/.local/bin/bashmarks.sh" ]; then
@@ -110,7 +163,7 @@ alias ll="ls -lhL --ignore=\"*.pyc\""
 # Grouped by file extension.
 alias lx="ls -x"
 # Lists only folders
-alias ld="ls -d */"
+alias ld="ls -d -l */"
 # Lists in nice human readble form, sorts directories first, then groups files with similar formats together.
 alias lo="ll --sort=extension"
 
@@ -141,23 +194,23 @@ alias vnv2="source ~/bin/venv/bin/activate"
 alias xopen="xdg-open"
 alias cl="fc -ln -1 | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | xclip -sel clip"
 
-function lag(){ # Stands for "list all gits" and it just lists all the git repos in current dir
+lag(){ # Stands for "list all gits" and it just lists all the git repos in current dir
     find $PWD -name ".git" -type d | sed 's,/*[^/]\+/*$,,'
 }
 
 # Function for quickly making latex-pdfs via Pandoc easier.
-function mkPd(){
+mkPd(){
     echo $2 "what" $1
     pandoc --webtex -s -o $2 $1
 }
 
 # Function for splitting a string on a delimiter using python.
-function pSplit(){
+pSplit(){
     #echo -e "1: $1\n2: $2"
     python -c "from __future__ import print_function
 for x in \"\"\"$1\"\"\".split(\"$2\"): print(x);"
 }
-function pymodules(){
+pymodules(){
     python -c "import pkgutil
 import sys, importlib
 package = importlib.import_module(sys.argv[1])
@@ -165,7 +218,7 @@ for importer, modname, ispkg in pkgutil.walk_packages(path=package.__path__, pre
     print(modname)" $@
 }
 
-function mp(){
+mp(){
     x="$1"
     rawfile="${x%.*}" # Gets all items before first period
     outfile=""
@@ -181,7 +234,7 @@ function mp(){
 
 # A nice way to list all the possible executable packages within the current
 # directory structure. Useful for listing go executables in a project.
-function list-gomains(){
+list-gomains(){
     mainfiles=$(rg --files-with-matches "package main" --iglob="*.go")
 
     for fn in $mainfiles; do
@@ -191,7 +244,7 @@ function list-gomains(){
     done
 }
 
-function gpm() {
+gpm() {
     BRANCHES=("master" "main");
     # for idx in "${!BRANCHES[@]}"; do # iterate across index numbers
     for BRANCH in "${BRANCHES[@]}"; do
@@ -205,7 +258,7 @@ function gpm() {
 
 # Turn on the extdebug mode so that our `scold_git_checkout` can prevent us from running
 # git-checkout by exiting 1; forcing us to re-learn our muscle memory
-shopt -s extdebug
+#shopt -s extdebug
 
 scold_git_checkout() {
 	if [ "$1" != "git" ]; then
@@ -258,6 +311,15 @@ export HISTFILESIZE=50000000
 
 export EDITOR='vim'
 
+# Change how 'less' behaves by default, enables these options always. To run less without these, run
+# less via 'LESS="" less'
+# -X disables screen clear on exit
+# -R displays colors
+# -S chop long lines
+# -i case-insensitive searches
+export LESS='-X -R -S -i'
+
+
 # Defining colors for prompt
 bold='\e[1;39m'
 orange='\e[38;5;208m'
@@ -273,11 +335,11 @@ reset='\e[0m'
 # Functions in bash don't seem to really "return" anything. The only way to get
 # a message out of them is to have them print data, then to capture that data
 # via command substitution. That is what we do here.
-function get_repo_name {
+get_repo_name() {
     repo=$(basename $(git rev-parse --show-toplevel 2> /dev/null) 2> /dev/null) || return
     echo "("$repo")"
 }
-function get_git_branch {
+get_git_branch() {
     ref=$(git symbolic-ref HEAD 2> /dev/null) || return
     echo ""
     echo "("${ref#refs/heads/}")"

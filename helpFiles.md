@@ -1327,3 +1327,24 @@ Copy those desktop files into their special XDG folder at `~/.local/share/applic
 Now when visiting those VS-code specific URLs in either Chromium or Firefox,
 we'll correctly be redirected back to Visual Studio Code to continue with e.g.
 the Live Share flow.
+
+# Functional Audio Keys with i3
+
+I want the audio keys on my keyboard to adjust the audio volume, and _to show visual feedback_ of
+what the volume is. The usual recommendations people give are terrible. I have a better way now. The
+idea is to us [`i3-volume`](https://github.com/hastinbe/i3-volume/) to make the process be not so
+awful. Steps are:
+
+```
+git clone https://github.com/hastinbe/i3-volume.git $HOME/bin/i3-volume/
+cd $HOME/bin/i3-volume
+sed -i "s/set \$volumepath.*/set \$volumepath ~\/bin\/i3-volume/" i3volume-pulseaudio.conf
+cat i3volume-pulseaudio.conf >> ~/.i3/config
+```
+
+Note I use the pulseaudio configs because I found that the Alsa based configs didn't work. Also, I
+recommend installing xfce4-power-manager to go with this as far as getting brightness buttons
+working is concerned. See my .i3/config file.
+
+
+
